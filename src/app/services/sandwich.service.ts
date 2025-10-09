@@ -21,4 +21,12 @@ export class SandwichService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
   }
+
+  get(id: number): Observable<Sandwich> {
+    return this.http.get<Sandwich>(`${this.base}/${id}`);
+  }
+
+  update(id: number, payload: { name?: string | null; description?: string | null; price?: number | null; }): Observable<void> {
+    return this.http.put<void>(`${this.base}/${id}`, payload);
+  }
 }

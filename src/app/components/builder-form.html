@@ -104,6 +104,10 @@
 
     <div class="actions">
       <div class="field" style="margin-right:12px;">
+        <label>Name (optional)</label>
+        <input type="text" [(ngModel)]="selected.name" name="name" placeholder="e.g. The Club" />
+      </div>
+      <div class="field" style="margin-right:12px;">
         <label>Price (optional)</label>
         <input type="number" step="0.01" min="0" [(ngModel)]="selected.price" name="price" placeholder="e.g. 7.50" />
       </div>

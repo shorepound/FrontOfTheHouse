@@ -10,6 +10,7 @@
         <th>Name</th>
         <th>Description</th>
         <th class="col-price">Price</th>
+        <th class="col-actions">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -21,7 +22,8 @@
           <span *ngIf="s.price == null">—</span>
         </td>
         <td class="col-actions">
-          <button class="btn btn-danger" type="button" (click)="deleteSandwich(s.id)" [disabled]="deleting.has(s.id)">
+          <a [routerLink]="['/builder']" [queryParams]="{ id: s.id }" class="btn btn-secondary">Edit</a>
+          <button class="btn btn-danger" type="button" (click)="deleteSandwich(s.id)" [disabled]="deleting.has(s.id)" style="margin-left:8px;">
             {{ deleting.has(s.id) ? 'Deleting…' : 'Delete' }}
           </button>
         </td>

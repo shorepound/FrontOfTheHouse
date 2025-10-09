@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { OptionsService, Option } from '../services/options.service';
 import { SandwichService } from '../services/sandwich.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 
@@ -29,6 +30,8 @@ export class BuilderForm {
   toppingsError: string | null = null;
 
   selected = {
+    // Optional user-specified name for the sandwich
+    name: null as string | null,
     breadId: null as number | null,
     // allow multiple selections (arrays)
     cheeseIds: [] as number[],
@@ -57,7 +60,11 @@ export class BuilderForm {
 
   loading = true;
 
-  constructor(private opts: OptionsService, private sandwiches: SandwichService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef) {}
+  constructor(private opts: OptionsService, private sandwiches: SandwichService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef, private route: ActivatedRoute, private router: Router) {}
+
+  // When editing an existing sandwich this holds its id
+  editingId: number | null = null;
+
 
   ngOnInit() {
     // Avoid calling HTTP during server-side rendering (prerender/SSR).
@@ -70,7 +77,7 @@ export class BuilderForm {
       return;
     }
 
-    // Load each list independently with a short timeout so the UI won't hang
+  // Load each list independently with a short timeout so the UI won't hang
     // if the dev proxy or backend is unavailable. We track pending requests
     // and clear `loading` once all attempts complete (success or error).
   this.loading = true;
@@ -100,6 +107,23 @@ export class BuilderForm {
   this.opts.list('meats').pipe(timeout(5000)).subscribe({ next: v => { this.meats = v || []; this.cd.detectChanges(); done(); }, error: e => { this.meatsError = 'Failed to load meats'; console.error('meats error', e); this.cd.detectChanges(); done(); } });
 
   this.opts.list('toppings').pipe(timeout(5000)).subscribe({ next: v => { this.toppings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.toppingsError = 'Failed to load toppings'; console.error('toppings error', e); this.cd.detectChanges(); done(); } });
+
+    // If an id param is present, load the sandwich for editing. We only run
+    // this in the browser to avoid server-side fetches.
+    const idParam = this.route.snapshot.queryParamMap.get('id');
+    if (idParam && isPlatformBrowser(this.platformId)) {
+      const id = Number(idParam);
+      if (!Number.isNaN(id)) {
+        this.editingId = id;
+        this.sandwiches.get(id).subscribe({ next: s => {
+          // Prefill only name and price/description for now.
+          this.selected.name = s.name ?? null;
+          this.selected.price = s.price ?? null;
+          // scroll/focus to form to make it apparent
+          try { this.cd.detectChanges(); } catch {}
+        }, error: () => { /* ignore, user can still build */ } });
+      }
+    }
 
     // Immediate client-side fallback: attempt native fetch() in parallel for
     // any empty lists. We only run this in the browser and only populate
@@ -289,10 +313,47 @@ export class BuilderForm {
       try { this.cd.detectChanges(); } catch { }
     }, timeoutMs);
 
+    // If editing an existing sandwich, call the update API via HttpClient
+    if (this.editingId) {
+      const id = this.editingId;
+      const payload = {
+        name: this.selected.name,
+        description: null as string | null,
+        price: this.selected.price
+      };
+      // use HttpClient wrapper
+      this.sandwiches.update(id, payload).subscribe({
+        next: () => {
+          clearTimeout(timeoutId);
+          this.submitting = false;
+          try { this.cd.detectChanges(); } catch {}
+          this.lastSave = { ok: true, message: 'Sandwich updated' };
+          try { this.showLastSave(); } catch {}
+          this.success = 'Sandwich updated!';
+          try { this.cd.detectChanges(); } catch {}
+          // navigate back to list
+          try { this.router.navigate(['/sandwiches']); } catch {}
+        },
+        error: (e) => {
+          clearTimeout(timeoutId);
+          this.submitting = false;
+          try { this.cd.detectChanges(); } catch {}
+          const msg = (e && e.message) ? e.message : String(e);
+          this.lastSave = { ok: false, message: 'Update failed: ' + msg };
+          try { this.showLastSave(); } catch {}
+          this.error = 'Update failed: ' + msg;
+          try { this.cd.detectChanges(); } catch {}
+        }
+      });
+      return;
+    }
+
+    // default: create via /api/builder
     fetch('/api/builder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        name: this.selected.name,
         breadId: this.selected.breadId,
         cheeseIds: this.selected.cheeseIds,
         dressingIds: this.selected.dressingIds,
