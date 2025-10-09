@@ -111,6 +111,19 @@ export class BuilderForm {
     return !!(this.selected.breadId && this.selected.cheeseId && this.selected.dressingId && this.selected.meatId && this.selected.toppingId);
   }
 
+  // Track whether user attempted submit (used to highlight empty required fields)
+  touchedOnSubmit = false;
+
+  isInvalid(kind: 'bread'|'cheese'|'dressing'|'meat'|'topping') {
+    switch(kind) {
+      case 'bread': return !!this.breadsError || (this.touchedOnSubmit && !this.selected.breadId);
+      case 'cheese': return !!this.cheesesError || (this.touchedOnSubmit && !this.selected.cheeseId);
+      case 'dressing': return !!this.dressingsError || (this.touchedOnSubmit && !this.selected.dressingId);
+      case 'meat': return !!this.meatsError || (this.touchedOnSubmit && !this.selected.meatId);
+      case 'topping': return !!this.toppingsError || (this.touchedOnSubmit && !this.selected.toppingId);
+    }
+  }
+
   clearMessages() {
     this.success = null;
     this.error = null;
@@ -118,6 +131,7 @@ export class BuilderForm {
 
   submit() {
     if (this.submitting) return;
+    this.touchedOnSubmit = true;
     this.submitting = true;
     fetch('/api/builder', {
       method: 'POST',

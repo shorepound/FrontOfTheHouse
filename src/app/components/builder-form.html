@@ -8,49 +8,58 @@
     Options are unavailable right now. This usually means the backend options database isn't reachable. You can try again.
     <button (click)="retry()">Retry</button>
   </div>
-  <form *ngIf="!loading" (ngSubmit)="submit()">
-    <label>Bread
-      <select [(ngModel)]="selected.breadId" name="bread">
-        <option [ngValue]="null">-- choose --</option>
-        <option *ngFor="let b of breads" [ngValue]="b.id">{{ b.label }}</option>
-      </select>
-      <div class="error" *ngIf="breadsError">{{ breadsError }} <button type="button" (click)="retryList('breads')">Retry</button></div>
-    </label>
+  <form *ngIf="!loading" (ngSubmit)="submit()" class="builder-form">
+    <div class="grid">
+      <div class="field" [class.invalid]="isInvalid('bread')">
+        <label>Bread</label>
+        <select [(ngModel)]="selected.breadId" name="bread">
+          <option [ngValue]="null">-- choose --</option>
+          <option *ngFor="let b of breads" [ngValue]="b.id">{{ b.label }}</option>
+        </select>
+        <div class="error" *ngIf="breadsError">{{ breadsError }} <button type="button" (click)="retryList('breads')">Retry</button></div>
+      </div>
 
-    <label>Cheese
-      <select [(ngModel)]="selected.cheeseId" name="cheese">
-        <option [ngValue]="null">-- choose --</option>
-        <option *ngFor="let c of cheeses" [ngValue]="c.id">{{ c.label }}</option>
-      </select>
-      <div class="error" *ngIf="cheesesError">{{ cheesesError }} <button type="button" (click)="retryList('cheeses')">Retry</button></div>
-    </label>
+      <div class="field" [class.invalid]="isInvalid('cheese')">
+        <label>Cheese</label>
+        <select [(ngModel)]="selected.cheeseId" name="cheese">
+          <option [ngValue]="null">-- choose --</option>
+          <option *ngFor="let c of cheeses" [ngValue]="c.id">{{ c.label }}</option>
+        </select>
+        <div class="error" *ngIf="cheesesError">{{ cheesesError }} <button type="button" (click)="retryList('cheeses')">Retry</button></div>
+      </div>
 
-    <label>Dressing
-      <select [(ngModel)]="selected.dressingId" name="dressing">
-        <option [ngValue]="null">-- choose --</option>
-        <option *ngFor="let d of dressings" [ngValue]="d.id">{{ d.label }}</option>
-      </select>
-      <div class="error" *ngIf="dressingsError">{{ dressingsError }} <button type="button" (click)="retryList('dressings')">Retry</button></div>
-    </label>
+      <div class="field" [class.invalid]="isInvalid('dressing')">
+        <label>Dressing</label>
+        <select [(ngModel)]="selected.dressingId" name="dressing">
+          <option [ngValue]="null">-- choose --</option>
+          <option *ngFor="let d of dressings" [ngValue]="d.id">{{ d.label }}</option>
+        </select>
+        <div class="error" *ngIf="dressingsError">{{ dressingsError }} <button type="button" (click)="retryList('dressings')">Retry</button></div>
+      </div>
 
-    <label>Meat
-      <select [(ngModel)]="selected.meatId" name="meat">
-        <option [ngValue]="null">-- choose --</option>
-        <option *ngFor="let m of meats" [ngValue]="m.id">{{ m.label }}</option>
-      </select>
-      <div class="error" *ngIf="meatsError">{{ meatsError }} <button type="button" (click)="retryList('meats')">Retry</button></div>
-    </label>
+      <div class="field" [class.invalid]="isInvalid('meat')">
+        <label>Meat</label>
+        <select [(ngModel)]="selected.meatId" name="meat">
+          <option [ngValue]="null">-- choose --</option>
+          <option *ngFor="let m of meats" [ngValue]="m.id">{{ m.label }}</option>
+        </select>
+        <div class="error" *ngIf="meatsError">{{ meatsError }} <button type="button" (click)="retryList('meats')">Retry</button></div>
+      </div>
 
-    <label>Topping
-      <select [(ngModel)]="selected.toppingId" name="topping">
-        <option [ngValue]="null">-- choose --</option>
-        <option *ngFor="let t of toppings" [ngValue]="t.id">{{ t.label }}</option>
-      </select>
-      <div class="error" *ngIf="toppingsError">{{ toppingsError }} <button type="button" (click)="retryList('toppings')">Retry</button></div>
-    </label>
+      <div class="field" [class.invalid]="isInvalid('topping')">
+        <label>Topping</label>
+        <select [(ngModel)]="selected.toppingId" name="topping">
+          <option [ngValue]="null">-- choose --</option>
+          <option *ngFor="let t of toppings" [ngValue]="t.id">{{ t.label }}</option>
+        </select>
+        <div class="error" *ngIf="toppingsError">{{ toppingsError }} <button type="button" (click)="retryList('toppings')">Retry</button></div>
+      </div>
+    </div>
 
-    <button type="submit" [disabled]="!canSubmit() || submitting">Submit</button>
-    <a routerLink="/sandwiches" class="link-to-list">Back to list</a>
+    <div class="actions">
+      <button class="btn btn-primary" type="submit" [disabled]="!canSubmit() || submitting">{{ submitting ? 'Saving…' : 'Submit' }}</button>
+      <a routerLink="/sandwiches" class="link-to-list">Back to list</a>
+    </div>
   </form>
   <div class="toast toast-success" *ngIf="success">
     {{ success }} <button type="button" (click)="clearMessages()">✕</button>

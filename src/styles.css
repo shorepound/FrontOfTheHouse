@@ -21,9 +21,21 @@ body {
 
 /* component styles moved here for global consistency */
 /* builder-form */
-select { display: block; margin-bottom: 20px; }
-button[type="submit"] { border-radius: 6px; }
-.link-to-list { margin-left: 12px; }
+/* builder-form layout and polish */
+.builder-form .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+.builder-form .field label { display: block; font-weight: 600; margin-bottom: 6px; }
+.builder-form select { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #cbd5e1; }
+.builder-form .field.invalid select { border-color: #d9534f; box-shadow: 0 0 0 3px rgba(217,83,79,0.08); }
+.builder-form .error { color: #d9534f; margin-top: 6px; font-size: 0.9rem; }
+.builder-form .actions { display: flex; align-items: center; gap: 12px; }
+.builder-form .link-to-list { margin-left: 8px; color: #06629f; text-decoration: underline; }
+.builder-form .btn { padding: 8px 14px; border-radius: 6px; }
+.builder-form .btn[disabled] { opacity: 0.6; cursor: not-allowed; }
 
 /* sandwich-list */
 nav a { margin-bottom: 12px; display: inline-block; }
