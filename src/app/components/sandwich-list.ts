@@ -1,12 +1,13 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { SandwichService, Sandwich } from '../services/sandwich.service';
 
 @Component({
   selector: 'sandwich-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './sandwich-list.html',
   styleUrls: ['./sandwich-list.css']
 })

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { OptionsService, Option } from '../services/options.service';
 import { SandwichService } from '../services/sandwich.service';
 import { firstValueFrom } from 'rxjs';
@@ -9,7 +10,7 @@ import { timeout } from 'rxjs/operators';
 @Component({
   selector: 'builder-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './builder-form.html'
 })
 export class BuilderForm {
