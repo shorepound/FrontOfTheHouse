@@ -1,0 +1,9 @@
+<section>
+  <h2>Sandwiches</h2>
+  <div *ngIf="loading">Loading...</div>
+  <ul *ngIf="!loading">
+    <li *ngFor="let s of sandwiches">
+      <strong>{{ s.name }}</strong> — {{ s.description }} — ${{ s.price }}
+    </li>
+  </ul>
+</section>

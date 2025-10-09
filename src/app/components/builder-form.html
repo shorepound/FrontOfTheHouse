@@ -1,0 +1,49 @@
+<section>
+  <h2>Build a Sandwich</h2>
+  <div *ngIf="loading">Loading options…</div>
+  <form *ngIf="!loading" (ngSubmit)="submit()">
+    <label>Bread
+      <select [(ngModel)]="selected.breadId" name="bread">
+        <option [ngValue]="null">-- choose --</option>
+        <option *ngFor="let b of breads" [ngValue]="b.id">{{ b.label }}</option>
+      </select>
+      <div class="error" *ngIf="breadsError">{{ breadsError }}</div>
+    </label>
+
+    <label>Cheese
+      <select [(ngModel)]="selected.cheeseId" name="cheese">
+        <option [ngValue]="null">-- choose --</option>
+        <option *ngFor="let c of cheeses" [ngValue]="c.id">{{ c.label }}</option>
+      </select>
+      <div class="error" *ngIf="cheesesError">{{ cheesesError }}</div>
+    </label>
+
+    <label>Dressing
+      <select [(ngModel)]="selected.dressingId" name="dressing">
+        <option [ngValue]="null">-- choose --</option>
+        <option *ngFor="let d of dressings" [ngValue]="d.id">{{ d.label }}</option>
+      </select>
+      <div class="error" *ngIf="dressingsError">{{ dressingsError }}</div>
+    </label>
+
+    <label>Meat
+      <select [(ngModel)]="selected.meatId" name="meat">
+        <option [ngValue]="null">-- choose --</option>
+        <option *ngFor="let m of meats" [ngValue]="m.id">{{ m.label }}</option>
+      </select>
+      <div class="error" *ngIf="meatsError">{{ meatsError }}</div>
+    </label>
+
+    <label>Topping
+      <select [(ngModel)]="selected.toppingId" name="topping">
+        <option [ngValue]="null">-- choose --</option>
+        <option *ngFor="let t of toppings" [ngValue]="t.id">{{ t.label }}</option>
+      </select>
+      <div class="error" *ngIf="toppingsError">{{ toppingsError }}</div>
+    </label>
+
+    <button type="submit">Submit</button>
+  </form>
+  <div class="success" *ngIf="success">{{ success }}</div>
+  <div class="error" *ngIf="error">{{ error }}</div>
+</section>

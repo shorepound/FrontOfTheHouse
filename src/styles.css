@@ -1,1 +1,20 @@
-/* You can add global styles to this file, and also import other style files */
+/*@import "tailwindcss";*/
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+body {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
+    background-color: azure;
+    color: #06629f;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #06629f;
+}
