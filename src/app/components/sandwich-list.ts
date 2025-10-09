@@ -7,7 +7,8 @@ import { SandwichService, Sandwich } from '../services/sandwich.service';
   selector: 'sandwich-list',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './sandwich-list.html'
+  templateUrl: './sandwich-list.html',
+  styleUrls: ['./sandwich-list.css']
 })
 export class SandwichList {
   sandwiches: Sandwich[] = [];

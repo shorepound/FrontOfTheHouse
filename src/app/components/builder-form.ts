@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OptionsService, Option } from '../services/options.service';
+import { SandwichService } from '../services/sandwich.service';
 import { firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 
@@ -35,7 +36,7 @@ export class BuilderForm {
 
   loading = true;
 
-  constructor(private opts: OptionsService) {}
+  constructor(private opts: OptionsService, private sandwiches: SandwichService) {}
 
   ngOnInit() {
     // Load each list independently with a short timeout so the UI won't hang
@@ -71,6 +72,49 @@ export class BuilderForm {
     });
   }
 
+  retry() {
+    // reset errors and reload lists
+    this.breadsError = this.cheesesError = this.dressingsError = this.meatsError = this.toppingsError = null;
+    this.breads = this.cheeses = this.dressings = this.meats = this.toppings = [];
+    this.loading = true;
+    // delegate to original init logic
+    this.ngOnInit();
+  }
+
+  // Retry a single list (breads|cheeses|dressings|meats|toppings)
+  retryList(kind: string) {
+    const handler = (errMsg: string, field: 'breadsError'|'cheesesError'|'dressingsError'|'meatsError'|'toppingsError') => (e: any) => {
+      console.error(kind, 'retry error', e);
+      this[field] = errMsg;
+    };
+    switch (kind) {
+      case 'breads':
+        this.breadsError = null; this.opts.list('breads').pipe(timeout(5000)).subscribe({ next: v => this.breads = v || [], error: handler('Failed to load breads', 'breadsError') });
+        break;
+      case 'cheeses':
+        this.cheesesError = null; this.opts.list('cheeses').pipe(timeout(5000)).subscribe({ next: v => this.cheeses = v || [], error: handler('Failed to load cheeses', 'cheesesError') });
+        break;
+      case 'dressings':
+        this.dressingsError = null; this.opts.list('dressings').pipe(timeout(5000)).subscribe({ next: v => this.dressings = v || [], error: handler('Failed to load dressings', 'dressingsError') });
+        break;
+      case 'meats':
+        this.meatsError = null; this.opts.list('meats').pipe(timeout(5000)).subscribe({ next: v => this.meats = v || [], error: handler('Failed to load meats', 'meatsError') });
+        break;
+      case 'toppings':
+        this.toppingsError = null; this.opts.list('toppings').pipe(timeout(5000)).subscribe({ next: v => this.toppings = v || [], error: handler('Failed to load toppings', 'toppingsError') });
+        break;
+    }
+  }
+
+  canSubmit() {
+    return !!(this.selected.breadId && this.selected.cheeseId && this.selected.dressingId && this.selected.meatId && this.selected.toppingId);
+  }
+
+  clearMessages() {
+    this.success = null;
+    this.error = null;
+  }
+
   submit() {
     if (this.submitting) return;
     this.submitting = true;
@@ -82,9 +126,14 @@ export class BuilderForm {
       this.submitting = false;
       if (res.ok) {
         this.success = 'Sandwich saved!';
+        // refresh sandwich list so user sees their new sandwich
+        this.sandwiches.list().subscribe({ next: () => {}, error: () => {} });
+        // auto-clear success after a short delay
+        setTimeout(() => this.success = null, 3500);
       } else {
         const txt = await res.text().catch(() => res.statusText);
         this.error = 'Save failed: ' + txt;
+        setTimeout(() => this.error = null, 6000);
       }
     }).catch(e => { this.submitting = false; this.error = 'Save failed: ' + (e && e.message ? e.message : e); });
   }

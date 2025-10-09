@@ -18,3 +18,12 @@ body {
     --bs-btn-color: #fff;
     --bs-btn-bg: #06629f;
 }
+
+/* component styles moved here for global consistency */
+/* builder-form */
+select { display: block; margin-bottom: 20px; }
+button[type="submit"] { border-radius: 6px; }
+.link-to-list { margin-left: 12px; }
+
+/* sandwich-list */
+nav a { margin-bottom: 12px; display: inline-block; }
