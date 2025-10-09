@@ -42,3 +42,56 @@ body {
 
 /* sandwich-list */
 nav a { margin-bottom: 12px; display: inline-block; }
+
+/* save banner styles */
+.save-banner {
+    position: relative;
+    margin: 1rem 0;
+}
+.save-banner > div {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: 6px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+}
+.save-banner > div.ok {
+    background: #e6ffed;
+    color: #075f3f;
+    border: 1px solid #b7f2c9;
+}
+.save-banner > div.err {
+    background: #fff2f2;
+    color: #6b0b0b;
+    border: 1px solid #f3c0c0;
+}
+.save-banner .icon { font-weight: 700; padding: 0 0.25rem; }
+.save-banner .content { flex: 1 1 auto; }
+.save-banner .title { font-size: 0.98rem; margin-bottom: 2px; }
+.save-banner .msg { font-size: 0.92rem; color: inherit; }
+.save-banner .dismiss {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.save-banner .dismiss:focus { outline: 3px solid rgba(6,98,159,0.18); }
+.save-data {
+    margin: 0.5rem 0 0 0;
+    padding: 0.5rem;
+    background: rgba(0,0,0,0.03);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    max-height: 8rem;
+    overflow: auto;
+}
+
+/* responsive tweaks */
+@media (max-width: 480px) {
+    .save-banner > div { gap: 0.5rem; padding: 0.45rem 0.6rem; }
+    .save-banner .title { font-size: 0.95rem; }
+    .save-data { font-size: 0.8rem; }
+}

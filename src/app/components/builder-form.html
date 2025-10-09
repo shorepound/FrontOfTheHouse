@@ -20,38 +20,74 @@
       </div>
 
       <div class="field" [class.invalid]="isInvalid('cheese')">
-        <label>Cheese</label>
-        <select [(ngModel)]="selected.cheeseId" name="cheese">
-          <option [ngValue]="null">-- choose --</option>
-          <option *ngFor="let c of cheeses" [ngValue]="c.id">{{ c.label }}</option>
-        </select>
+        <label>Cheese (choose one or more)</label>
+        <div class="checkbox-list">
+          <div class="checkbox-item">
+            <label>
+              <input type="checkbox" [checked]="selected.noCheese" (change)="toggleNoCheese($event.target.checked)" />
+              No Cheese
+            </label>
+          </div>
+          <div class="checkbox-item" *ngFor="let c of cheeses">
+            <label>
+              <input type="checkbox" [checked]="selected.cheeseIds.includes(c.id)" (change)="toggleCheese(c.id, $event.target.checked)" />
+              {{ c.label }}
+            </label>
+          </div>
+        </div>
         <div class="error" *ngIf="cheesesError">{{ cheesesError }} <button type="button" (click)="retryList('cheeses')">Retry</button></div>
       </div>
 
       <div class="field" [class.invalid]="isInvalid('dressing')">
-        <label>Dressing</label>
-        <select [(ngModel)]="selected.dressingId" name="dressing">
-          <option [ngValue]="null">-- choose --</option>
-          <option *ngFor="let d of dressings" [ngValue]="d.id">{{ d.label }}</option>
-        </select>
+        <label>Dressing (choose one or more)</label>
+        <div class="checkbox-list">
+          <div class="checkbox-item">
+            <label>
+              <input type="checkbox" [checked]="selected.noDressing" (change)="toggleNoDressing($event.target.checked)" />
+              No Dressing
+            </label>
+          </div>
+          <div class="checkbox-item" *ngFor="let d of dressings">
+            <label>
+              <input type="checkbox" [checked]="selected.dressingIds.includes(d.id)" (change)="toggleDressing(d.id, $event.target.checked)" />
+              {{ d.label }}
+            </label>
+          </div>
+        </div>
         <div class="error" *ngIf="dressingsError">{{ dressingsError }} <button type="button" (click)="retryList('dressings')">Retry</button></div>
       </div>
 
       <div class="field" [class.invalid]="isInvalid('meat')">
-        <label>Meat</label>
-        <select [(ngModel)]="selected.meatId" name="meat">
-          <option [ngValue]="null">-- choose --</option>
-          <option *ngFor="let m of meats" [ngValue]="m.id">{{ m.label }}</option>
-        </select>
+        <label>Meat (choose one or more)</label>
+        <div class="checkbox-list">
+          <div class="checkbox-item">
+            <label>
+              <input type="checkbox" [checked]="selected.noMeat" (change)="toggleNoMeat($event.target.checked)" />
+              No Meat
+            </label>
+          </div>
+          <div class="checkbox-item" *ngFor="let m of meats">
+            <label>
+              <input type="checkbox" [checked]="selected.meatIds.includes(m.id)" (change)="toggleMeat(m.id, $event.target.checked)" />
+              {{ m.label }}
+            </label>
+          </div>
+        </div>
         <div class="error" *ngIf="meatsError">{{ meatsError }} <button type="button" (click)="retryList('meats')">Retry</button></div>
       </div>
 
       <div class="field" [class.invalid]="isInvalid('topping')">
         <label>Toppings</label>
         <div class="checkbox-list">
+          <div class="checkbox-item">
+            <label>
+              <input type="checkbox" [checked]="selected.noToppings" (change)="toggleNoToppings($event.target.checked)" />
+              No Toppings
+            </label>
+          </div>
           <div class="checkbox-item" *ngFor="let t of toppings">
             <label>
-              <input type="checkbox" [checked]="selected.toppingIds?.includes(t.id)" (change)="toggleTopping(t.id, $event.target.checked)" />
+              <input type="checkbox" [checked]="selected.toppingIds.includes(t.id)" (change)="toggleTopping(t.id, $event.target.checked)" />
               {{ t.label }}
             </label>
           </div>
@@ -70,5 +106,18 @@
   </div>
   <div class="toast toast-error" *ngIf="error">
     {{ error }} <button type="button" (click)="clearMessages()">✕</button>
+  </div>
+
+  <!-- persistent save banner (accessible) -->
+  <div class="save-banner" *ngIf="lastSave" role="status" aria-live="polite">
+    <div [class.ok]="lastSave.ok" [class.err]="!lastSave.ok">
+      <div class="icon" aria-hidden="true">{{ lastSave.ok ? '✓' : '!' }}</div>
+      <div class="content">
+        <div class="title"><strong>{{ lastSave.ok ? 'Saved' : 'Error' }}</strong></div>
+        <div class="msg">{{ lastSave.message }}</div>
+      </div>
+      <button (click)="dismissLastSave()" class="dismiss" aria-label="Dismiss save notification">✕</button>
+    </div>
+    <pre *ngIf="lastSave.data" class="save-data">{{ lastSave.data | json }}</pre>
   </div>
 </section>
