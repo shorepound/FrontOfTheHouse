@@ -4,11 +4,23 @@
     <a routerLink="/builder">Build a sandwich</a>
   </nav>
   <div *ngIf="loading">Loading...</div>
-  <ul *ngIf="!loading">
-    <li *ngFor="let s of sandwiches">
-      <strong>{{ s.name }}</strong> — {{ s.description }} —
-      <span *ngIf="s.price != null">${{ s.price.toFixed(2) }}</span>
-      <span *ngIf="s.price == null">—</span>
-    </li>
-  </ul>
+  <table *ngIf="!loading" class="sandwich-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th class="col-price">Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let s of sandwiches">
+        <td><strong>{{ s.name }}</strong></td>
+        <td>{{ s.description }}</td>
+        <td class="col-price">
+          <span *ngIf="s.price != null">${{ s.price.toFixed(2) }}</span>
+          <span *ngIf="s.price == null">—</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </section>
