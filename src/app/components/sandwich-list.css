@@ -1,0 +1,6 @@
+/* Styles for sandwich list component */
+nav a { margin-bottom: 12px; display: inline-block; }
+
+.sandwich-table{width:100%;border-collapse:collapse}
+.sandwich-table th,.sandwich-table td{padding:8px 10px;border-bottom:1px solid #eee}
+.sandwich-table .col-price{text-align:right;white-space:nowrap}

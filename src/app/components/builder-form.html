@@ -3,12 +3,18 @@
   <nav>
     <a routerLink="/sandwiches">View sandwiches</a>
   </nav>
-  <div *ngIf="loading">Loading options…</div>
+  <!-- Show a lightweight loading overlay instead of removing the form entirely
+       This avoids the server-rendered form appearing and then disappearing
+       during client bootstrap/hydration when `loading` toggles. -->
+  <div *ngIf="loading" class="loading-overlay">Loading options…</div>
+
   <div *ngIf="!loading && (breadsError == 'Failed to load breads' && cheesesError == 'Failed to load cheeses' && dressingsError == 'Failed to load dressings' && meatsError == 'Failed to load meats' && toppingsError == 'Failed to load toppings')" class="warning">
     Options are unavailable right now. This usually means the backend options database isn't reachable. You can try again.
     <button (click)="retry()">Retry</button>
   </div>
-  <form *ngIf="!loading" (ngSubmit)="submit()" class="builder-form">
+
+  <!-- keep the form in the DOM while loading; add a dimmed state when loading -->
+  <form (ngSubmit)="submit()" class="builder-form" [class.dimmed]="loading">
     <div class="grid">
       <div class="field" [class.invalid]="isInvalid('bread')">
         <label>Bread</label>
@@ -97,7 +103,11 @@
     </div>
 
     <div class="actions">
-      <button class="btn btn-primary" type="submit" [disabled]="!canSubmit() || submitting">{{ submitting ? 'Saving…' : 'Submit' }}</button>
+      <div class="field" style="margin-right:12px;">
+        <label>Price (optional)</label>
+        <input type="number" step="0.01" min="0" [(ngModel)]="selected.price" name="price" placeholder="e.g. 7.50" />
+      </div>
+  <button class="btn btn-primary" type="submit" (click)="submit()" [disabled]="!canSubmit() || submitting">{{ submitting ? 'Saving…' : 'Submit' }}</button>
       <a routerLink="/sandwiches" class="link-to-list">Back to list</a>
     </div>
   </form>
@@ -108,8 +118,10 @@
     {{ error }} <button type="button" (click)="clearMessages()">✕</button>
   </div>
 
+  
+
   <!-- persistent save banner (accessible) -->
-  <div class="save-banner" *ngIf="lastSave" role="status" aria-live="polite">
+  <div class="save-banner" *ngIf="lastSave" role="status" aria-live="polite" tabindex="-1">
     <div [class.ok]="lastSave.ok" [class.err]="!lastSave.ok">
       <div class="icon" aria-hidden="true">{{ lastSave.ok ? '✓' : '!' }}</div>
       <div class="content">
@@ -118,6 +130,7 @@
       </div>
       <button (click)="dismissLastSave()" class="dismiss" aria-label="Dismiss save notification">✕</button>
     </div>
-    <pre *ngIf="lastSave.data" class="save-data">{{ lastSave.data | json }}</pre>
+    <!-- raw JSON removed to avoid showing internal data; keep a compact hint if needed -->
+    <div *ngIf="lastSave.data" class="save-data-brief">Details available in developer tools</div>
   </div>
 </section>
