@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Inject, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { OptionsService, Option } from '../services/options.service';
@@ -52,43 +53,91 @@ export class BuilderForm {
 
   // Last save result shown in a persistent banner
   lastSave: { ok: boolean; message: string; data?: any } | null = null;
+  // temporary manualFetchStatus removed during cleanup
 
   loading = true;
 
-  constructor(private opts: OptionsService, private sandwiches: SandwichService) {}
+  constructor(private opts: OptionsService, private sandwiches: SandwichService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
+    // Avoid calling HTTP during server-side rendering (prerender/SSR).
+    // Add an early debug log so we can tell whether ngOnInit runs in the
+    // browser or not.
+    // keep a minimal log for errors only
+
+    if (!isPlatformBrowser(this.platformId)) {
+      this.loading = false;
+      return;
+    }
+
     // Load each list independently with a short timeout so the UI won't hang
     // if the dev proxy or backend is unavailable. We track pending requests
     // and clear `loading` once all attempts complete (success or error).
-    this.loading = true;
-    let pending = 5;
-    const done = () => { pending -= 1; if (pending <= 0) this.loading = false; };
+  this.loading = true;
+  // loading starts
+  let pending = 5;
+  const done = () => {
+    pending -= 1;
+    // Avoid ExpressionChangedAfterItHasBeenCheckedError by scheduling the
+    // final `loading = false` update in a microtask so it runs after the
+    // current change detection cycle.
+    console.debug('BuilderForm: done() called, remaining=', pending);
+    if (pending <= 0) {
+      queueMicrotask(() => {
+        this.loading = false;
+        console.debug('BuilderForm: all done, set loading=false (microtask)');
+        try { this.cd.detectChanges(); } catch { }
+      });
+    }
+  };
 
-    this.opts.list('breads').pipe(timeout(5000)).subscribe({
-      next: v => { this.breads = v || []; done(); },
-      error: e => { this.breadsError = 'Failed to load breads'; console.error('breads error', e); done(); }
-    });
+  this.opts.list('breads').pipe(timeout(5000)).subscribe({ next: v => { this.breads = v || []; this.cd.detectChanges(); done(); }, error: e => { this.breadsError = 'Failed to load breads'; console.error('breads error', e); this.cd.detectChanges(); done(); } });
 
-    this.opts.list('cheeses').pipe(timeout(5000)).subscribe({
-      next: v => { this.cheeses = v || []; done(); },
-      error: e => { this.cheesesError = 'Failed to load cheeses'; console.error('cheeses error', e); done(); }
-    });
+  this.opts.list('cheeses').pipe(timeout(5000)).subscribe({ next: v => { this.cheeses = v || []; this.cd.detectChanges(); done(); }, error: e => { this.cheesesError = 'Failed to load cheeses'; console.error('cheeses error', e); this.cd.detectChanges(); done(); } });
 
-    this.opts.list('dressings').pipe(timeout(5000)).subscribe({
-      next: v => { this.dressings = v || []; done(); },
-      error: e => { this.dressingsError = 'Failed to load dressings'; console.error('dressings error', e); done(); }
-    });
+  this.opts.list('dressings').pipe(timeout(5000)).subscribe({ next: v => { this.dressings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.dressingsError = 'Failed to load dressings'; console.error('dressings error', e); this.cd.detectChanges(); done(); } });
 
-    this.opts.list('meats').pipe(timeout(5000)).subscribe({
-      next: v => { this.meats = v || []; done(); },
-      error: e => { this.meatsError = 'Failed to load meats'; console.error('meats error', e); done(); }
-    });
+  this.opts.list('meats').pipe(timeout(5000)).subscribe({ next: v => { this.meats = v || []; this.cd.detectChanges(); done(); }, error: e => { this.meatsError = 'Failed to load meats'; console.error('meats error', e); this.cd.detectChanges(); done(); } });
 
-    this.opts.list('toppings').pipe(timeout(5000)).subscribe({
-      next: v => { this.toppings = v || []; done(); },
-      error: e => { this.toppingsError = 'Failed to load toppings'; console.error('toppings error', e); done(); }
-    });
+  this.opts.list('toppings').pipe(timeout(5000)).subscribe({ next: v => { this.toppings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.toppingsError = 'Failed to load toppings'; console.error('toppings error', e); this.cd.detectChanges(); done(); } });
+
+    // Immediate client-side fallback: attempt native fetch() in parallel for
+    // any empty lists. We only run this in the browser and only populate
+    // fields that are still empty and have no explicit error. This is a
+    // pragmatic dev-time mitigation for hydration/HttpClient races.
+    if (typeof window !== 'undefined') {
+      (async () => {
+        try {
+          const checks: Array<[keyof BuilderForm, string, string]> = [
+            ['breads', 'breads', 'breadsError'],
+            ['cheeses', 'cheeses', 'cheesesError'],
+            ['dressings', 'dressings', 'dressingsError'],
+            ['meats', 'meats', 'meatsError'],
+            ['toppings', 'toppings', 'toppingsError']
+          ];
+          await Promise.all(checks.map(async ([field, kind, errField]) => {
+            // @ts-ignore
+            if ((this as any)[field] && (this as any)[field].length > 0) return;
+            // @ts-ignore
+            if ((this as any)[errField]) return;
+            try {
+              const res = await fetch(`/api/options/${kind}`);
+              if (!res.ok) return;
+              const json = await res.json().catch(() => null);
+                if (Array.isArray(json)) {
+                  // @ts-ignore
+                  (this as any)[field] = json;
+                  this.cd.detectChanges();
+                }
+            } catch (e) {
+              // ignore errors here; main HttpClient handlers will surface problems
+            }
+          }));
+        } catch {
+          /* ignore */
+        }
+      })();
+    }
   }
 
   retry() {
@@ -124,6 +173,13 @@ export class BuilderForm {
         break;
     }
   }
+
+  /**
+   * Temporary helper: perform a manual fetch using the browser fetch API
+   * to populate options. Useful to bypass HttpClient/hydration edge cases
+   * during debugging. This will be removed when root cause is fixed.
+   */
+  // manualFetch helper removed during cleanup
 
   canSubmit() {
     // require at least one selection (or explicit 'no' option) in each category
@@ -228,7 +284,9 @@ export class BuilderForm {
       this.submitting = false;
       // show persistent failure banner on timeout
       this.lastSave = { ok: false, message: 'Save timed out after ' + (timeoutMs/1000) + 's' };
+      try { this.showLastSave(); } catch { }
       this.error = 'Save timed out';
+      try { this.cd.detectChanges(); } catch { }
     }, timeoutMs);
 
     fetch('/api/builder', {
@@ -247,12 +305,15 @@ export class BuilderForm {
       clearTimeout(timeoutId);
       console.debug('BuilderForm: fetch completed, status=', res.status);
       this.submitting = false;
+      try { this.cd.detectChanges(); } catch { }
       if (res.ok) {
         console.debug('BuilderForm: save OK');
         const saved = await res.json().catch(() => null);
-        // show persistent banner with server response
-        this.lastSave = { ok: true, message: 'Sandwich saved', data: saved };
+  // show persistent banner with server response
+  this.lastSave = { ok: true, message: 'Sandwich saved', data: saved };
+  try { this.showLastSave(); } catch { }
         this.success = 'Sandwich saved!';
+        try { this.cd.detectChanges(); } catch { }
         // refresh sandwich list so user sees their new sandwich
         this.sandwiches.list().subscribe({ next: () => {}, error: () => {} });
         // auto-clear success after a short delay
@@ -269,31 +330,53 @@ export class BuilderForm {
           this.dressingsError = errs['dressingIds'] ?? errs['dressingId'] ?? null;
           this.meatsError = errs['meatIds'] ?? errs['meatId'] ?? null;
           this.toppingsError = errs['toppingIds'] ?? errs['toppingId'] ?? null;
-          } else {
+          try { this.cd.detectChanges(); } catch { }
+            } else {
             const txt = await res.text().catch(() => res.statusText);
             console.debug('BuilderForm: unknown 400 body', txt);
             this.lastSave = { ok: false, message: 'Save failed (400): ' + txt };
+            try { this.showLastSave(); } catch { }
             this.error = 'Save failed: ' + txt;
+            try { this.cd.detectChanges(); } catch { }
             setTimeout(() => this.error = null, 6000);
           }
       } else {
         const txt = await res.text().catch(() => res.statusText);
         console.debug('BuilderForm: non-400 error', res.status, txt);
         this.lastSave = { ok: false, message: 'Save failed (' + res.status + '): ' + txt };
+        try { this.showLastSave(); } catch { }
         this.error = 'Save failed: ' + txt;
+        try { this.cd.detectChanges(); } catch { }
         setTimeout(() => this.error = null, 6000);
       }
     }).catch(e => {
       clearTimeout(timeoutId);
       this.submitting = false;
+      try { this.cd.detectChanges(); } catch { }
       const msg = (e && e.message) ? e.message : String(e);
       this.lastSave = { ok: false, message: 'Save failed: ' + msg };
+      try { this.showLastSave(); } catch { }
       this.error = 'Save failed: ' + msg;
+      try { this.cd.detectChanges(); } catch { }
     });
   }
 
   dismissLastSave() {
     this.lastSave = null;
+  }
+
+  showLastSave() {
+    // Scroll the persistent save banner into view and focus it so users notice it.
+    // Run in a microtask to avoid ExpressionChangedAfterItHasBeenCheckedError
+    queueMicrotask(() => {
+      try {
+        const el = document.querySelector('.save-banner') as HTMLElement | null;
+        if (!el) return;
+        try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch { el.scrollIntoView(); }
+        try { el.focus(); } catch { }
+      } catch { }
+      try { this.cd.detectChanges(); } catch { }
+    });
   }
 
   submitting = false;

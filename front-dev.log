@@ -1,72 +1,37 @@
 
-Warning: This is a simple server for use in testing or debugging Angular applications
-locally. It hasn't been reviewed for security issues.
+> sandwich-app@0.0.0 start
+> ng serve --proxy-config proxy.conf.json
 
-Binding this server to an open connection can result in compromising your application or
-computer. Using a different host than the one passed to the "--host" flag might result in
-websocket connection issues.
-    
 ❯ Building...
 ✔ Building...
 Browser bundles     
 Initial chunk files  | Names            |  Raw size
-styles.css           | styles           | 278.52 kB | 
-main.js              | main             |   3.27 kB | 
+styles.css           | styles           | 281.12 kB | 
+main.js              | main             |   3.31 kB | 
 chunk-SG2LYVAH.js    | -                | 894 bytes | 
 
-                     | Initial total    | 282.69 kB
+                     | Initial total    | 285.31 kB
 
 Lazy chunk files     | Names            |  Raw size
-chunk-TTAGSPXQ.js    | builder-form     |  21.47 kB | 
-chunk-5OXUCHE2.js    | sandwich-list    |   6.02 kB | 
+chunk-PSEYAQ5T.js    | builder-form     |  48.16 kB | 
+chunk-LKVJ2AO6.js    | sandwich-list    |   5.90 kB | 
+chunk-3VZGI4AS.js    | -                |   1.17 kB | 
 
 
 Server bundles      
 Initial chunk files  | Names            |  Raw size
-main.server.mjs      | main.server      |   4.54 kB | 
+main.server.mjs      | main.server      |   4.65 kB | 
 server.mjs           | server           |   1.79 kB | 
 chunk-VI6KR4OF.mjs   | -                | 928 bytes | 
 polyfills.server.mjs | polyfills.server | 243 bytes | 
 
 Lazy chunk files     | Names            |  Raw size
-chunk-LWR52TGJ.mjs   | builder-form     |  21.51 kB | 
-chunk-MVBUV5PC.mjs   | sandwich-list    |   6.05 kB | 
+chunk-7RGJ2FMF.mjs   | builder-form     |  48.20 kB | 
+chunk-NWSS7WMT.mjs   | sandwich-list    |   5.93 kB | 
+chunk-OZEKUNCA.mjs   | -                |   1.20 kB | 
 
-Application bundle generation complete. [2.469 seconds] - 2025-10-08T19:17:32.220Z
+Application bundle generation complete. [3.272 seconds] - 2025-10-09T19:35:14.951Z
 
 Watch mode enabled. Watching for file changes...
 NOTE: Raw file sizes do not reflect development server per-request transformations.
-3:17:32 PM [vite] (ssr) Re-optimizing dependencies because vite config has changed
-3:17:32 PM [vite] (client) Re-optimizing dependencies because vite config has changed
   ➜  Local:   http://localhost:4200/
-  ➜  Network: http://192.168.22.36:4200/
-NG02801: Angular detected that `HttpClient` is not configured to use `fetch` APIs. It's strongly recommended to enable `fetch` for applications that use Server-Side Rendering for better performance and compatibility. To enable `fetch`, add the `withFetch()` to the `provideHttpClient()` call at the root of the application.
-❯ Changes detected. Rebuilding...
-✔ Changes detected. Rebuilding...
-Browser bundles     
-Initial chunk files  | Names            |  Raw size
-styles.css           | styles           | 278.52 kB | 
-main.js              | main             |   3.27 kB | 
-chunk-SG2LYVAH.js    | -                | 894 bytes | 
-
-                     | Initial total    | 282.69 kB
-
-Lazy chunk files     | Names            |  Raw size
-chunk-TTAGSPXQ.js    | builder-form     |  21.47 kB | 
-chunk-5OXUCHE2.js    | sandwich-list    |   6.02 kB | 
-
-
-Server bundles      
-Initial chunk files  | Names            |  Raw size
-main.server.mjs      | main.server      |   4.54 kB | 
-server.mjs           | server           |   1.79 kB | 
-chunk-VI6KR4OF.mjs   | -                | 928 bytes | 
-polyfills.server.mjs | polyfills.server | 243 bytes | 
-
-Lazy chunk files     | Names            |  Raw size
-chunk-LWR52TGJ.mjs   | builder-form     |  21.51 kB | 
-chunk-MVBUV5PC.mjs   | sandwich-list    |   6.05 kB | 
-
-Application bundle generation complete. [0.698 seconds] - 2025-10-08T19:20:28.359Z
-
-Component update sent to client(s).
