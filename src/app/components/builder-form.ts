@@ -39,6 +39,9 @@ export class BuilderForm {
     noDressing: false,
     noMeat: false,
     noToppings: false
+    ,
+    // optional price in dollars
+    price: null as number | null
   };
 
   // Temporary UI debug helper: set true to show alerts for success/error so
@@ -236,7 +239,8 @@ export class BuilderForm {
         cheeseIds: this.selected.cheeseIds,
         dressingIds: this.selected.dressingIds,
         meatIds: this.selected.meatIds,
-        toppingIds: this.selected.toppingIds
+        toppingIds: this.selected.toppingIds,
+        price: this.selected.price
       }),
       signal: ac.signal
     }).then(async res => {
