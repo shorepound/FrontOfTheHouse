@@ -6,7 +6,9 @@
   <div *ngIf="loading">Loading...</div>
   <ul *ngIf="!loading">
     <li *ngFor="let s of sandwiches">
-      <strong>{{ s.name }}</strong> — {{ s.description }} — ${{ s.price }}
+      <strong>{{ s.name }}</strong> — {{ s.description }} —
+      <span *ngIf="s.price != null">${{ s.price.toFixed(2) }}</span>
+      <span *ngIf="s.price == null">—</span>
     </li>
   </ul>
 </section>
