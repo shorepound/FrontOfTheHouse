@@ -17,4 +17,8 @@ export class SandwichService {
   list(): Observable<Sandwich[]> {
     return this.http.get<Sandwich[]>(this.base);
   }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`);
+  }
 }

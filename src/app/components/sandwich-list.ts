@@ -14,6 +14,7 @@ import { SandwichService, Sandwich } from '../services/sandwich.service';
 export class SandwichList {
   sandwiches: Sandwich[] = [];
   loading = false;
+  deleting = new Set<number>();
 
   constructor(private svc: SandwichService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef) {}
 
@@ -33,6 +34,25 @@ export class SandwichList {
         try { this.cd.detectChanges(); } catch {}
       },
       error: () => { this.loading = false; try { this.cd.detectChanges(); } catch {} }
+    });
+  }
+
+  deleteSandwich(id: number) {
+    if (!confirm('Delete this sandwich? This cannot be undone.')) return;
+    this.deleting.add(id);
+    try { this.cd.detectChanges(); } catch {}
+    this.svc.delete(id).subscribe({
+      next: () => {
+        // remove locally to avoid refetch
+        this.sandwiches = this.sandwiches.filter(s => s.id !== id);
+        this.deleting.delete(id);
+        try { this.cd.detectChanges(); } catch {}
+      },
+      error: () => {
+        this.deleting.delete(id);
+        try { this.cd.detectChanges(); } catch {}
+        alert('Failed to delete sandwich');
+      }
     });
   }
 }

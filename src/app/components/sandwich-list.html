@@ -20,6 +20,11 @@
           <span *ngIf="s.price != null">${{ s.price.toFixed(2) }}</span>
           <span *ngIf="s.price == null">—</span>
         </td>
+        <td class="col-actions">
+          <button class="btn btn-danger" type="button" (click)="deleteSandwich(s.id)" [disabled]="deleting.has(s.id)">
+            {{ deleting.has(s.id) ? 'Deleting…' : 'Delete' }}
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>
