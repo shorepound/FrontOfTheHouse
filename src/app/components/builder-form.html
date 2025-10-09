@@ -47,9 +47,8 @@
       </div>
 
       <div class="field" [class.invalid]="isInvalid('topping')">
-        <label>Topping</label>
-        <select [(ngModel)]="selected.toppingId" name="topping">
-          <option [ngValue]="null">-- choose --</option>
+        <label>Toppings <small>(Ctrl / Cmd to select multiple)</small></label>
+        <select multiple [(ngModel)]="selected.toppingIds" name="topping">
           <option *ngFor="let t of toppings" [ngValue]="t.id">{{ t.label }}</option>
         </select>
         <div class="error" *ngIf="toppingsError">{{ toppingsError }} <button type="button" (click)="retryList('toppings')">Retry</button></div>

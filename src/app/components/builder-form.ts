@@ -32,7 +32,8 @@ export class BuilderForm {
     cheeseId: null as number | null,
     dressingId: null as number | null,
     meatId: null as number | null,
-    toppingId: null as number | null
+    toppingId: null as number | null,
+    toppingIds: [] as number[]
   };
 
   loading = true;
@@ -108,7 +109,8 @@ export class BuilderForm {
   }
 
   canSubmit() {
-    return !!(this.selected.breadId && this.selected.cheeseId && this.selected.dressingId && this.selected.meatId && this.selected.toppingId);
+    // require at least one topping selection now
+    return !!(this.selected.breadId && this.selected.cheeseId && this.selected.dressingId && this.selected.meatId && (this.selected.toppingIds && this.selected.toppingIds.length > 0));
   }
 
   // Track whether user attempted submit (used to highlight empty required fields)
@@ -120,7 +122,7 @@ export class BuilderForm {
       case 'cheese': return !!this.cheesesError || (this.touchedOnSubmit && !this.selected.cheeseId);
       case 'dressing': return !!this.dressingsError || (this.touchedOnSubmit && !this.selected.dressingId);
       case 'meat': return !!this.meatsError || (this.touchedOnSubmit && !this.selected.meatId);
-      case 'topping': return !!this.toppingsError || (this.touchedOnSubmit && !this.selected.toppingId);
+      case 'topping': return !!this.toppingsError || (this.touchedOnSubmit && (!this.selected.toppingIds || this.selected.toppingIds.length === 0));
     }
   }
 
@@ -136,7 +138,13 @@ export class BuilderForm {
     fetch('/api/builder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(this.selected)
+      body: JSON.stringify({
+        breadId: this.selected.breadId,
+        cheeseId: this.selected.cheeseId,
+        dressingId: this.selected.dressingId,
+        meatId: this.selected.meatId,
+        toppingIds: this.selected.toppingIds
+      })
     }).then(async res => {
       this.submitting = false;
       if (res.ok) {
@@ -154,7 +162,8 @@ export class BuilderForm {
           this.cheesesError = errs['cheeseId'] ?? null;
           this.dressingsError = errs['dressingId'] ?? null;
           this.meatsError = errs['meatId'] ?? null;
-          this.toppingsError = errs['toppingId'] ?? null;
+          // server may return toppingIds when multiple toppings are provided
+          this.toppingsError = errs['toppingId'] ?? errs['toppingIds'] ?? null;
         } else {
           const txt = await res.text().catch(() => res.statusText);
           this.error = 'Save failed: ' + txt;
