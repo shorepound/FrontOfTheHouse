@@ -126,6 +126,13 @@ export class BuilderForm {
     }
   }
 
+  toggleTopping(id: number, checked: boolean) {
+    if (!this.selected.toppingIds) this.selected.toppingIds = [];
+    const idx = this.selected.toppingIds.indexOf(id);
+    if (checked && idx === -1) this.selected.toppingIds.push(id);
+    if (!checked && idx !== -1) this.selected.toppingIds.splice(idx, 1);
+  }
+
   clearMessages() {
     this.success = null;
     this.error = null;

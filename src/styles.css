@@ -37,5 +37,8 @@ body {
 .builder-form .btn { padding: 8px 14px; border-radius: 6px; }
 .builder-form .btn[disabled] { opacity: 0.6; cursor: not-allowed; }
 
+.builder-form .checkbox-list { display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow: auto; }
+.builder-form .checkbox-item label { cursor: pointer; }
+
 /* sandwich-list */
 nav a { margin-bottom: 12px; display: inline-block; }

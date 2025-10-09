@@ -47,10 +47,15 @@
       </div>
 
       <div class="field" [class.invalid]="isInvalid('topping')">
-        <label>Toppings <small>(Ctrl / Cmd to select multiple)</small></label>
-        <select multiple [(ngModel)]="selected.toppingIds" name="topping">
-          <option *ngFor="let t of toppings" [ngValue]="t.id">{{ t.label }}</option>
-        </select>
+        <label>Toppings</label>
+        <div class="checkbox-list">
+          <div class="checkbox-item" *ngFor="let t of toppings">
+            <label>
+              <input type="checkbox" [checked]="selected.toppingIds?.includes(t.id)" (change)="toggleTopping(t.id, $event.target.checked)" />
+              {{ t.label }}
+            </label>
+          </div>
+        </div>
         <div class="error" *ngIf="toppingsError">{{ toppingsError }} <button type="button" (click)="retryList('toppings')">Retry</button></div>
       </div>
     </div>
