@@ -130,6 +130,21 @@ export class BuilderForm {
         this.sandwiches.list().subscribe({ next: () => {}, error: () => {} });
         // auto-clear success after a short delay
         setTimeout(() => this.success = null, 3500);
+      } else if (res.status === 400) {
+        // try parse field-level validation
+        const body = await res.json().catch(() => null);
+        if (body && body.errors) {
+          const errs = body.errors as Record<string,string>;
+          this.breadsError = errs['breadId'] ?? null;
+          this.cheesesError = errs['cheeseId'] ?? null;
+          this.dressingsError = errs['dressingId'] ?? null;
+          this.meatsError = errs['meatId'] ?? null;
+          this.toppingsError = errs['toppingId'] ?? null;
+        } else {
+          const txt = await res.text().catch(() => res.statusText);
+          this.error = 'Save failed: ' + txt;
+          setTimeout(() => this.error = null, 6000);
+        }
       } else {
         const txt = await res.text().catch(() => res.statusText);
         this.error = 'Save failed: ' + txt;
