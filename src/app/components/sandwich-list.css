@@ -6,8 +6,12 @@ nav a { margin-bottom: 12px; display: inline-block; }
 .sandwich-table .col-price{text-align:right;white-space:nowrap}
 
 .sandwich-table .col-actions{width:120px;text-align:right}
-.btn-danger{background:#c0392b;color:#fff;border:none;padding:6px 10px;border-radius:4px}
-.btn-danger[disabled]{opacity:0.6}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;padding:6px;border-radius:6px;color:var(--text-color,#333);cursor:pointer}
+.icon-btn svg{display:block;width:18px;height:18px}
+.icon-btn:hover{background:rgba(0,0,0,0.05)}
+.icon-btn:active{background:rgba(0,0,0,0.08)}
+.icon-btn[disabled]{opacity:0.5;cursor:not-allowed}
+.icon-delete{color:#c0392b}
 
 .desc-block{display:flex;flex-direction:column;gap:6px}
 .desc-group{display:flex;align-items:center;gap:8px}

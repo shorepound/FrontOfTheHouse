@@ -46,6 +46,9 @@ export class BuilderForm {
     ,
     // optional price in dollars
     price: null as number | null
+    ,
+    // whether the chosen bread should be toasted
+    toasted: false as boolean
   };
 
   // Temporary UI debug helper: set true to show alerts for success/error so
@@ -91,6 +94,64 @@ export class BuilderForm {
   // compact review of the sandwich instead of forcing the user through the
   // stepper flow.
   editingDescription: string | null = null;
+
+  // When true the edit flow will open the stepper so the user can change composition
+  editingInPlace = false;
+
+  startEditComposition() {
+    // Open the stepper and attempt to populate selections if needed
+    this.editingInPlace = true;
+    // If the lists are loaded, populate selections immediately; otherwise
+    // populateSelectionsFromDescription will be called after lists load.
+    try { if (!this.loading && this.editingDescription) this.populateSelectionsFromDescription(this.editingDescription); } catch {}
+    try { this.cd.detectChanges(); } catch {}
+  }
+
+  // Parse a server description string and try to match labels to option ids
+  populateSelectionsFromDescription(desc: string) {
+    // Reset selections
+    this.selected.breadId = null;
+    this.selected.cheeseIds = [];
+    this.selected.dressingIds = [];
+    this.selected.meatIds = [];
+    this.selected.toppingIds = [];
+    this.selected.toasted = false;
+
+    const parts = desc.split(';').map(p => p.trim()).filter(Boolean);
+    for (const part of parts) {
+      const idx = part.indexOf(':');
+      if (idx === -1) continue;
+      const label = part.substring(0, idx).trim().toLowerCase();
+      const items = part.substring(idx + 1).split(',').map(s => s.trim()).filter(Boolean);
+      switch (label) {
+        case 'bread':
+          // bread may contain '(toasted)'
+          const bname = items.join(', ');
+          const toastedMatch = /\(toasted\)$/i.test(bname);
+          const clean = bname.replace(/\(toasted\)$/i, '').trim();
+          const breadOpt = this.breads.find(b => b.label.toLowerCase() === clean.toLowerCase());
+          if (breadOpt) this.selected.breadId = breadOpt.id;
+          if (toastedMatch) this.selected.toasted = true;
+          break;
+        case 'cheese':
+          for (const it of items) {
+            const opt = this.cheeses.find(c => c.label.toLowerCase() === it.toLowerCase()); if (opt) this.selected.cheeseIds.push(opt.id);
+          }
+          break;
+        case 'dressing':
+          for (const it of items) { const opt = this.dressings.find(d => d.label.toLowerCase() === it.toLowerCase()); if (opt) this.selected.dressingIds.push(opt.id); }
+          break;
+        case 'meats':
+        case 'meat':
+          for (const it of items) { const opt = this.meats.find(m => m.label.toLowerCase() === it.toLowerCase()); if (opt) this.selected.meatIds.push(opt.id); }
+          break;
+        case 'toppings':
+        case 'topping':
+          for (const it of items) { const opt = this.toppings.find(t => t.label.toLowerCase() === it.toLowerCase()); if (opt) this.selected.toppingIds.push(opt.id); }
+          break;
+      }
+    }
+  }
 
   get isEditMode() { return !!this.editingId; }
 
