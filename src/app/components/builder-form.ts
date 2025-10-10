@@ -87,6 +87,12 @@ export class BuilderForm {
 
   // When editing an existing sandwich this holds its id
   editingId: number | null = null;
+  // When editing, keep the server-provided description so we can show a
+  // compact review of the sandwich instead of forcing the user through the
+  // stepper flow.
+  editingDescription: string | null = null;
+
+  get isEditMode() { return !!this.editingId; }
 
 
   ngOnInit() {
@@ -106,6 +112,23 @@ export class BuilderForm {
   this.loading = true;
   // loading starts
   let pending = 5;
+  // Global fallback: if lists haven't all resolved within this many ms,
+  // stop showing the full-page loading overlay and surface per-list
+  // errors for any empty lists. This avoids the UI being stuck at
+  // "Loading options…" when a request silently stalls.
+  const globalFallbackMs = 6000;
+  const globalTimeout = setTimeout(() => {
+    if (this.loading) {
+      this.loading = false;
+      // mark any empty lists as failed so the user sees retry buttons
+      if (!this.breads || this.breads.length === 0) this.breadsError = this.breadsError ?? 'Failed to load breads';
+      if (!this.cheeses || this.cheeses.length === 0) this.cheesesError = this.cheesesError ?? 'Failed to load cheeses';
+      if (!this.dressings || this.dressings.length === 0) this.dressingsError = this.dressingsError ?? 'Failed to load dressings';
+      if (!this.meats || this.meats.length === 0) this.meatsError = this.meatsError ?? 'Failed to load meats';
+      if (!this.toppings || this.toppings.length === 0) this.toppingsError = this.toppingsError ?? 'Failed to load toppings';
+      try { this.cd.detectChanges(); } catch { }
+    }
+  }, globalFallbackMs);
   const done = () => {
     pending -= 1;
     // Avoid ExpressionChangedAfterItHasBeenCheckedError by scheduling the
@@ -113,6 +136,7 @@ export class BuilderForm {
     // current change detection cycle.
     console.debug('BuilderForm: done() called, remaining=', pending);
     if (pending <= 0) {
+      clearTimeout(globalTimeout);
       queueMicrotask(() => {
         this.loading = false;
         console.debug('BuilderForm: all done, set loading=false (microtask)');
@@ -121,20 +145,20 @@ export class BuilderForm {
     }
   };
 
-  this.opts.list('breads').pipe(timeout(5000)).subscribe({ next: v => { this.breads = v || []; this.cd.detectChanges(); done(); }, error: e => { this.breadsError = 'Failed to load breads'; console.error('breads error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('breads').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:breads next', v?.length); this.breads = v || []; this.cd.detectChanges(); done(); }, error: e => { this.breadsError = 'Failed to load breads'; console.error('breads error', e); this.cd.detectChanges(); done(); } });
 
-  this.opts.list('cheeses').pipe(timeout(5000)).subscribe({ next: v => { this.cheeses = v || []; this.cd.detectChanges(); done(); }, error: e => { this.cheesesError = 'Failed to load cheeses'; console.error('cheeses error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('cheeses').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:cheeses next', v?.length); this.cheeses = v || []; this.cd.detectChanges(); done(); }, error: e => { this.cheesesError = 'Failed to load cheeses'; console.error('cheeses error', e); this.cd.detectChanges(); done(); } });
 
-  this.opts.list('dressings').pipe(timeout(5000)).subscribe({ next: v => { this.dressings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.dressingsError = 'Failed to load dressings'; console.error('dressings error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('dressings').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:dressings next', v?.length); this.dressings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.dressingsError = 'Failed to load dressings'; console.error('dressings error', e); this.cd.detectChanges(); done(); } });
 
-  this.opts.list('meats').pipe(timeout(5000)).subscribe({ next: v => { this.meats = v || []; this.cd.detectChanges(); done(); }, error: e => { this.meatsError = 'Failed to load meats'; console.error('meats error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('meats').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:meats next', v?.length); this.meats = v || []; this.cd.detectChanges(); done(); }, error: e => { this.meatsError = 'Failed to load meats'; console.error('meats error', e); this.cd.detectChanges(); done(); } });
 
-  this.opts.list('toppings').pipe(timeout(5000)).subscribe({ next: v => { this.toppings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.toppingsError = 'Failed to load toppings'; console.error('toppings error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('toppings').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:toppings next', v?.length); this.toppings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.toppingsError = 'Failed to load toppings'; console.error('toppings error', e); this.cd.detectChanges(); done(); } });
 
     // If an id param is present, load the sandwich for editing. We only run
     // this in the browser to avoid server-side fetches.
     const idParam = this.route.snapshot.queryParamMap.get('id');
-    if (idParam && isPlatformBrowser(this.platformId)) {
+        if (idParam && isPlatformBrowser(this.platformId)) {
       const id = Number(idParam);
       if (!Number.isNaN(id)) {
         this.editingId = id;
@@ -142,6 +166,8 @@ export class BuilderForm {
           // Prefill only name and price/description for now.
           this.selected.name = s.name ?? null;
           this.selected.price = s.price ?? null;
+          // keep the full description for a read-only review view
+          this.editingDescription = s.description ?? null;
           // scroll/focus to form to make it apparent
           try { this.cd.detectChanges(); } catch {}
         }, error: () => { /* ignore, user can still build */ } });

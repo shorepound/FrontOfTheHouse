@@ -6,240 +6,15 @@
 ✔ Building...
 Browser bundles     
 Initial chunk files  | Names            |  Raw size
-styles.css           | styles           | 281.12 kB | 
+styles.css           | styles           | 281.38 kB | 
 main.js              | main             |   3.31 kB | 
 chunk-SG2LYVAH.js    | -                | 894 bytes | 
 
-                     | Initial total    | 285.31 kB
+                     | Initial total    | 285.58 kB
 
 Lazy chunk files     | Names            |  Raw size
-chunk-CAQCQLHE.js    | builder-form     |  48.16 kB | 
-chunk-6IUHZHCM.js    | sandwich-list    |  10.71 kB | 
-chunk-UYQDFSMX.js    | -                |   1.24 kB | 
-
-
-Server bundles      
-Initial chunk files  | Names            |  Raw size
-main.server.mjs      | main.server      |   4.65 kB | 
-server.mjs           | server           |   1.79 kB | 
-chunk-VI6KR4OF.mjs   | -                | 928 bytes | 
-polyfills.server.mjs | polyfills.server | 243 bytes | 
-
-Lazy chunk files     | Names            |  Raw size
-chunk-DH5OIH4V.mjs   | builder-form     |  48.20 kB | 
-chunk-Q5KPQZJE.mjs   | sandwich-list    |  10.74 kB | 
-chunk-35HLFYUG.mjs   | -                |   1.27 kB | 
-
-Application bundle generation complete. [3.347 seconds] - 2025-10-09T21:10:06.017Z
-
-Watch mode enabled. Watching for file changes...
-NOTE: Raw file sizes do not reflect development server per-request transformations.
-  ➜  Local:   http://localhost:4200/
-❯ Changes detected. Rebuilding...
-✔ Changes detected. Rebuilding...
-Browser bundles    
-Initial chunk files | Names        | Raw size
-main.js             | main         |  3.31 kB | 
-
-Lazy chunk files    | Names        | Raw size
-chunk-KALKWC3V.js   | builder-form | 48.23 kB | 
-
-
-Server bundles     
-Initial chunk files | Names        | Raw size
-main.server.mjs     | main.server  |  4.65 kB | 
-
-Lazy chunk files    | Names        | Raw size
-chunk-SH6V7WZD.mjs  | builder-form | 48.27 kB | 
-
-Application bundle generation complete. [1.035 seconds] - 2025-10-09T21:40:55.113Z
-
-Page reload sent to client(s).
-❯ Changes detected. Rebuilding...
-✔ Changes detected. Rebuilding...
-Browser bundles    
-Initial chunk files | Names        | Raw size
-main.js             | main         |  3.31 kB | 
-
-Lazy chunk files    | Names        | Raw size
-chunk-5T5HPORW.js   | builder-form | 48.27 kB | 
-
-
-Server bundles     
-Initial chunk files | Names        | Raw size
-main.server.mjs     | main.server  |  4.65 kB | 
-
-Lazy chunk files    | Names        | Raw size
-chunk-HLTALZPY.mjs  | builder-form | 48.30 kB | 
-
-Application bundle generation complete. [0.565 seconds] - 2025-10-09T21:41:00.461Z
-
-Page reload sent to client(s).
-❯ Changes detected. Rebuilding...
-✔ Changes detected. Rebuilding...
-Browser bundles    
-Initial chunk files | Names        | Raw size
-main.js             | main         |  3.31 kB | 
-
-Lazy chunk files    | Names        | Raw size
-chunk-Y5L6UCLM.js   | builder-form | 49.17 kB | 
-
-
-Server bundles     
-Initial chunk files | Names        | Raw size
-main.server.mjs     | main.server  |  4.65 kB | 
-
-Lazy chunk files    | Names        | Raw size
-chunk-6W2RLF3M.mjs  | builder-form | 49.21 kB | 
-
-Application bundle generation complete. [0.570 seconds] - 2025-10-09T21:41:07.830Z
-
-Component update sent to client(s).
-❯ Changes detected. Rebuilding...
-✔ Changes detected. Rebuilding...
-Browser bundles    
-Initial chunk files | Names         | Raw size
-main.js             | main          |  3.31 kB | 
-
-Lazy chunk files    | Names         | Raw size
-chunk-J6C23UPY.js   | builder-form  | 49.17 kB | 
-chunk-MUM6VZ2P.js   | sandwich-list | 10.71 kB | 
-chunk-HPHRQVEN.js   | -             |  1.39 kB | 
-
-
-Server bundles     
-Initial chunk files | Names         | Raw size
-main.server.mjs     | main.server   |  4.65 kB | 
-
-Lazy chunk files    | Names         | Raw size
-chunk-V43AG2RQ.mjs  | builder-form  | 49.21 kB | 
-chunk-UWQTJ2P2.mjs  | sandwich-list | 10.74 kB | 
-chunk-NQI2YBVE.mjs  | -             |  1.42 kB | 
-
-Application bundle generation complete. [0.492 seconds] - 2025-10-09T21:41:14.812Z
-
-Page reload sent to client(s).
-❯ Changes detected. Rebuilding...
-✔ Changes detected. Rebuilding...
-Browser bundles    
-Initial chunk files | Names         | Raw size
-main.js             | main          |  3.31 kB | 
-
-Lazy chunk files    | Names         | Raw size
-chunk-ML3HAZ6H.js   | sandwich-list | 11.32 kB | 
-
-
-Server bundles     
-Initial chunk files | Names         | Raw size
-main.server.mjs     | main.server   |  4.65 kB | 
-
-Lazy chunk files    | Names         | Raw size
-chunk-JXD6QRK7.mjs  | sandwich-list | 11.36 kB | 
-
-Application bundle generation complete. [0.308 seconds] - 2025-10-09T21:41:29.132Z
-
-Component update sent to client(s).
-❯ Changes detected. Rebuilding...
-✔ Changes detected. Rebuilding...
-Browser bundles    
-Initial chunk files | Names       | Raw size
-main.js             | main        |  3.50 kB | 
-
-
-Server bundles     
-Initial chunk files | Names       | Raw size
-main.server.mjs     | main.server |  4.85 kB | 
-
-Application bundle generation complete. [0.250 seconds] - 2025-10-09T21:41:36.862Z
-
-Page reload sent to client(s).
-❯ Changes detected. Rebuilding...
-✔ Changes detected. Rebuilding...
-Browser bundles    
-Initial chunk files | Names        | Raw size
-main.js             | main         |  3.50 kB | 
-
-Lazy chunk files    | Names        | Raw size
-chunk-AVHN2HCY.js   | builder-form | 49.25 kB | 
-
-
-Server bundles     
-Initial chunk files | Names        | Raw size
-main.server.mjs     | main.server  |  4.85 kB | 
-
-Lazy chunk files    | Names        | Raw size
-chunk-KTPLAN3L.mjs  | builder-form | 49.28 kB | 
-
-Application bundle generation complete. [0.596 seconds] - 2025-10-09T21:41:45.243Z
-
-Page reload sent to client(s).
-❯ Changes detected. Rebuilding...
-✔ Changes detected. Rebuilding...
-Browser bundles    
-Initial chunk files | Names        | Raw size
-main.js             | main         |  3.50 kB | 
-
-Lazy chunk files    | Names        | Raw size
-chunk-VJZU77QY.js   | builder-form | 50.03 kB | 
-
-
-Server bundles     
-Initial chunk files | Names        | Raw size
-main.server.mjs     | main.server  |  4.85 kB | 
-
-Lazy chunk files    | Names        | Raw size
-chunk-SJE7DKBQ.mjs  | builder-form | 50.06 kB | 
-
-Application bundle generation complete. [0.515 seconds] - 2025-10-09T21:41:56.086Z
-
-Page reload sent to client(s).
-❯ Changes detected. Rebuilding...
-✔ Changes detected. Rebuilding...
-Browser bundles    
-Initial chunk files | Names        | Raw size
-main.js             | main         |  3.50 kB | 
-
-Lazy chunk files    | Names        | Raw size
-chunk-RMNU5TUZ.js   | builder-form | 51.41 kB | 
-
-
-Server bundles     
-Initial chunk files | Names        | Raw size
-main.server.mjs     | main.server  |  4.85 kB | 
-
-Lazy chunk files    | Names        | Raw size
-chunk-AOLDLOCT.mjs  | builder-form | 51.44 kB | 
-
-Application bundle generation complete. [0.620 seconds] - 2025-10-09T21:42:37.041Z
-
-Page reload sent to client(s).
-❯ Changes detected. Rebuilding...
-✔ Changes detected. Rebuilding...
-Browser bundles    
-Initial chunk files | Names       | Raw size
-main.js             | main        |  3.31 kB | 
-
-
-Server bundles     
-Initial chunk files | Names       | Raw size
-main.server.mjs     | main.server |  4.65 kB | 
-
-Application bundle generation complete. [0.270 seconds] - 2025-10-09T21:43:50.986Z
-
-Page reload sent to client(s).
-❯ Changes detected. Rebuilding...
-✔ Changes detected. Rebuilding...
-Browser bundles     
-Initial chunk files  | Names            |  Raw size
-styles.css           | styles           | 281.12 kB | 
-main.js              | main             |   3.31 kB | 
-chunk-SG2LYVAH.js    | -                | 894 bytes | 
-
-                     | Initial total    | 285.31 kB
-
-Lazy chunk files     | Names            |  Raw size
-chunk-RMNU5TUZ.js    | builder-form     |  51.41 kB | 
-chunk-ML3HAZ6H.js    | sandwich-list    |  11.32 kB | 
+chunk-YR6LPQOX.js    | builder-form     |  58.20 kB | 
+chunk-IXQLAQWT.js    | sandwich-list    |  11.44 kB | 
 chunk-HPHRQVEN.js    | -                |   1.39 kB | 
 
 
@@ -251,30 +26,53 @@ chunk-VI6KR4OF.mjs   | -                | 928 bytes |
 polyfills.server.mjs | polyfills.server | 243 bytes | 
 
 Lazy chunk files     | Names            |  Raw size
-chunk-AOLDLOCT.mjs   | builder-form     |  51.44 kB | 
-chunk-JXD6QRK7.mjs   | sandwich-list    |  11.36 kB | 
+chunk-LBPRJSPJ.mjs   | builder-form     |  58.24 kB | 
+chunk-X4LHAUDT.mjs   | sandwich-list    |  11.48 kB | 
 chunk-NQI2YBVE.mjs   | -                |   1.42 kB | 
 
-Application bundle generation complete. [0.223 seconds] - 2025-10-09T21:43:51.401Z
+Application bundle generation complete. [3.081 seconds] - 2025-10-10T16:32:58.145Z
 
+Watch mode enabled. Watching for file changes...
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  ➜  Local:   http://localhost:4200/
 ❯ Changes detected. Rebuilding...
 ✔ Changes detected. Rebuilding...
 Browser bundles    
-Initial chunk files | Names         | Raw size
-main.js             | main          |  3.31 kB | 
+Initial chunk files | Names        | Raw size
+main.js             | main         |  3.31 kB | 
 
-Lazy chunk files    | Names         | Raw size
-chunk-IXQLAQWT.js   | sandwich-list | 11.44 kB | 
+Lazy chunk files    | Names        | Raw size
+chunk-RZRFSYWE.js   | builder-form | 58.51 kB | 
 
 
 Server bundles     
-Initial chunk files | Names         | Raw size
-main.server.mjs     | main.server   |  4.65 kB | 
+Initial chunk files | Names        | Raw size
+main.server.mjs     | main.server  |  4.65 kB | 
 
-Lazy chunk files    | Names         | Raw size
-chunk-X4LHAUDT.mjs  | sandwich-list | 11.48 kB | 
+Lazy chunk files    | Names        | Raw size
+chunk-AQHTW5FE.mjs  | builder-form | 58.55 kB | 
 
-Application bundle generation complete. [0.323 seconds] - 2025-10-09T21:44:18.509Z
+Application bundle generation complete. [0.921 seconds] - 2025-10-10T16:50:18.387Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names        | Raw size
+main.js             | main         |  3.31 kB | 
+
+Lazy chunk files    | Names        | Raw size
+chunk-TPXUB744.js   | builder-form | 62.84 kB | 
+
+
+Server bundles     
+Initial chunk files | Names        | Raw size
+main.server.mjs     | main.server  |  4.65 kB | 
+
+Lazy chunk files    | Names        | Raw size
+chunk-QFDCKGWN.mjs  | builder-form | 62.88 kB | 
+
+Application bundle generation complete. [0.825 seconds] - 2025-10-10T16:50:34.149Z
 
 Component update sent to client(s).
 ❯ Changes detected. Rebuilding...
@@ -284,7 +82,7 @@ Initial chunk files | Names        | Raw size
 main.js             | main         |  3.31 kB | 
 
 Lazy chunk files    | Names        | Raw size
-chunk-DTBFDETT.js   | builder-form | 51.41 kB | 
+chunk-PI2VOSGX.js   | builder-form | 63.11 kB | 
 
 
 Server bundles     
@@ -292,8 +90,88 @@ Initial chunk files | Names        | Raw size
 main.server.mjs     | main.server  |  4.65 kB | 
 
 Lazy chunk files    | Names        | Raw size
-chunk-6FB5NDW4.mjs  | builder-form | 51.45 kB | 
+chunk-R5TD2ISI.mjs  | builder-form | 63.14 kB | 
 
-Application bundle generation complete. [0.658 seconds] - 2025-10-09T21:44:25.571Z
+Application bundle generation complete. [0.908 seconds] - 2025-10-10T17:06:07.359Z
 
 Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Browser bundles     
+Initial chunk files  | Names            |  Raw size
+styles.css           | styles           | 281.38 kB | 
+main.js              | main             |   3.31 kB | 
+chunk-SG2LYVAH.js    | -                | 894 bytes | 
+
+                     | Initial total    | 285.58 kB
+
+Lazy chunk files     | Names            |  Raw size
+chunk-PI2VOSGX.js    | builder-form     |  63.11 kB | 
+chunk-IXQLAQWT.js    | sandwich-list    |  11.44 kB | 
+chunk-HPHRQVEN.js    | -                |   1.39 kB | 
+
+
+Server bundles      
+Initial chunk files  | Names            |  Raw size
+main.server.mjs      | main.server      |   4.65 kB | 
+server.mjs           | server           |   1.79 kB | 
+chunk-VI6KR4OF.mjs   | -                | 928 bytes | 
+polyfills.server.mjs | polyfills.server | 243 bytes | 
+
+Lazy chunk files     | Names            |  Raw size
+chunk-R5TD2ISI.mjs   | builder-form     |  63.14 kB | 
+chunk-X4LHAUDT.mjs   | sandwich-list    |  11.48 kB | 
+chunk-NQI2YBVE.mjs   | -                |   1.42 kB | 
+
+Application bundle generation complete. [0.297 seconds] - 2025-10-10T17:09:53.825Z
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Browser bundles    
+Initial chunk files | Names        | Raw size
+main.js             | main         |  3.31 kB | 
+
+Lazy chunk files    | Names        | Raw size
+chunk-V5YZPL4K.js   | builder-form | 64.05 kB | 
+
+
+Server bundles     
+Initial chunk files | Names        | Raw size
+main.server.mjs     | main.server  |  4.65 kB | 
+
+Lazy chunk files    | Names        | Raw size
+chunk-WLE2JM2I.mjs  | builder-form | 64.09 kB | 
+
+Application bundle generation complete. [1.000 seconds] - 2025-10-10T17:26:08.132Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Browser bundles     
+Initial chunk files  | Names            |  Raw size
+styles.css           | styles           | 281.38 kB | 
+main.js              | main             |   3.31 kB | 
+chunk-SG2LYVAH.js    | -                | 894 bytes | 
+
+                     | Initial total    | 285.58 kB
+
+Lazy chunk files     | Names            |  Raw size
+chunk-V5YZPL4K.js    | builder-form     |  64.05 kB | 
+chunk-IXQLAQWT.js    | sandwich-list    |  11.44 kB | 
+chunk-HPHRQVEN.js    | -                |   1.39 kB | 
+
+
+Server bundles      
+Initial chunk files  | Names            |  Raw size
+main.server.mjs      | main.server      |   4.65 kB | 
+server.mjs           | server           |   1.79 kB | 
+chunk-VI6KR4OF.mjs   | -                | 928 bytes | 
+polyfills.server.mjs | polyfills.server | 243 bytes | 
+
+Lazy chunk files     | Names            |  Raw size
+chunk-WLE2JM2I.mjs   | builder-form     |  64.09 kB | 
+chunk-X4LHAUDT.mjs   | sandwich-list    |  11.48 kB | 
+chunk-NQI2YBVE.mjs   | -                |   1.42 kB | 
+
+Application bundle generation complete. [0.284 seconds] - 2025-10-10T17:26:29.465Z
+
