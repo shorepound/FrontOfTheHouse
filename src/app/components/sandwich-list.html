@@ -16,7 +16,19 @@
     <tbody>
       <tr *ngFor="let s of sandwiches">
         <td><strong>{{ s.name }}</strong></td>
-        <td>{{ s.description }}</td>
+        <td>
+          <ng-container *ngIf="s.description; else noDesc">
+            <div class="desc-block">
+              <div *ngFor="let group of parseDescription(s.description)" class="desc-group">
+                <div class="group-label">{{ group.label }}:</div>
+                <div class="group-items">
+                  <span *ngFor="let it of group.items" class="chip">{{ it }}</span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noDesc>—</ng-template>
+        </td>
         <td class="col-price">
           <span *ngIf="s.price != null">${{ s.price.toFixed(2) }}</span>
           <span *ngIf="s.price == null">—</span>

@@ -8,3 +8,9 @@ nav a { margin-bottom: 12px; display: inline-block; }
 .sandwich-table .col-actions{width:120px;text-align:right}
 .btn-danger{background:#c0392b;color:#fff;border:none;padding:6px 10px;border-radius:4px}
 .btn-danger[disabled]{opacity:0.6}
+
+.desc-block{display:flex;flex-direction:column;gap:6px}
+.desc-group{display:flex;align-items:center;gap:8px}
+.group-label{font-weight:600;margin-right:6px;color:#333;white-space:nowrap}
+.group-items{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#f1f1f1;padding:4px 8px;border-radius:12px;font-size:0.9em;color:#222}

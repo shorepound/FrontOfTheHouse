@@ -16,6 +16,20 @@ export class SandwichList {
   loading = false;
   deleting = new Set<number>();
 
+  // Helper: parse a server description like
+  // "Cheese: cheddar; Dressing: mayo; Toppings: lettuce, tomato"
+  // into an array of { label, items[] } so the UI can render them nicely.
+  parseDescription(desc: string | null) {
+    if (!desc) return [] as Array<{ label: string; items: string[] }>;
+    return desc.split(';').map(part => part.trim()).filter(Boolean).map(part => {
+      const idx = part.indexOf(':');
+      if (idx === -1) return { label: part, items: [] };
+      const label = part.substring(0, idx).trim();
+      const items = part.substring(idx + 1).split(',').map(s => s.trim()).filter(Boolean);
+      return { label, items };
+    });
+  }
+
   constructor(private svc: SandwichService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
