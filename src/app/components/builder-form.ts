@@ -172,8 +172,10 @@ export class BuilderForm {
               if (!res.ok) return;
               const json = await res.json().catch(() => null);
                 if (Array.isArray(json)) {
+                  // Map labels to Title Case to match OptionsService behavior
+                  const titleCase = (s: string) => String(s || '').replace(/(^|\s)\S/g, t => t.toUpperCase());
                   // @ts-ignore
-                  (this as any)[field] = json;
+                  (this as any)[field] = json.map((o: any) => ({ id: o.id, label: titleCase(o.label ?? o.name ?? '') }));
                   this.cd.detectChanges();
                 }
             } catch (e) {
