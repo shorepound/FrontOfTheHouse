@@ -148,8 +148,9 @@
 
     <div class="actions">
       <div class="field" style="margin-right:12px;">
-        <label>Name (optional)</label>
+        <label>Name <span style="color:#b00">*</span></label>
         <input type="text" [(ngModel)]="selected.name" name="name" placeholder="e.g. The Club" />
+        <div class="error" *ngIf="touchedOnSubmit && (!selected.name || (selected.name && selected.name.trim().length === 0))">Name is required</div>
       </div>
       <div class="field" style="margin-right:12px;">
         <label>Price (optional)</label>

@@ -262,7 +262,8 @@ export class BuilderForm {
     const hasDressing = (this.selected.dressingIds && this.selected.dressingIds.length > 0) || !!this.selected.noDressing;
     const hasMeat = (this.selected.meatIds && this.selected.meatIds.length > 0) || !!this.selected.noMeat;
     const hasToppings = (this.selected.toppingIds && this.selected.toppingIds.length > 0) || !!this.selected.noToppings;
-    return !!(this.selected.breadId && hasCheese && hasDressing && hasMeat && hasToppings);
+    const hasName = !!(this.selected.name && String(this.selected.name).trim().length > 0);
+    return !!(hasName && this.selected.breadId && hasCheese && hasDressing && hasMeat && hasToppings);
   }
 
   // Track whether user attempted submit (used to highlight empty required fields)
