@@ -60,6 +60,29 @@ export class BuilderForm {
 
   loading = true;
 
+  // Stepper UI state: current step index (0-based)
+  steps = [ 'Bread', 'Cheese', 'Dressing', 'Meat', 'Toppings' ];
+  stepIndex = 0;
+
+  // Convenience getters
+  get currentStep() { return this.steps[this.stepIndex]; }
+  get isFirstStep() { return this.stepIndex === 0; }
+  get isLastStep() { return this.stepIndex === this.steps.length - 1; }
+
+  nextStep() {
+    if (!this.isLastStep) {
+      this.stepIndex += 1;
+      try { this.cd.detectChanges(); } catch {}
+    }
+  }
+
+  prevStep() {
+    if (!this.isFirstStep) {
+      this.stepIndex -= 1;
+      try { this.cd.detectChanges(); } catch {}
+    }
+  }
+
   constructor(private opts: OptionsService, private sandwiches: SandwichService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef, private route: ActivatedRoute, private router: Router) {}
 
   // When editing an existing sandwich this holds its id

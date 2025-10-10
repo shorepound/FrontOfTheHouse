@@ -108,3 +108,9 @@ nav a { margin-bottom: 12px; display: inline-block; }
     margin-bottom: 12px;
     color: #333;
 }
+
+/* Stepper styles */
+.stepper { border: 1px solid rgba(6,98,159,0.06); padding: 12px; border-radius: 8px; background: #fff; }
+.step-header .step-name { font-weight: 700; margin-bottom: 8px; }
+.step-body { margin-top: 8px; }
+.step-controls .btn { min-width: 88px; }

@@ -15,90 +15,117 @@
 
   <!-- keep the form in the DOM while loading; add a dimmed state when loading -->
   <form (ngSubmit)="submit()" class="builder-form" [class.dimmed]="loading">
-    <div class="grid">
-      <div class="field" [class.invalid]="isInvalid('bread')">
-        <label>Bread</label>
-        <select [(ngModel)]="selected.breadId" name="bread">
-          <option [ngValue]="null">-- choose --</option>
-          <option *ngFor="let b of breads" [ngValue]="b.id">{{ b.label }}</option>
-        </select>
-        <div class="error" *ngIf="breadsError">{{ breadsError }} <button type="button" (click)="retryList('breads')">Retry</button></div>
+    <div class="stepper">
+      <div class="step-header">
+        <div class="step-name">Step {{ stepIndex + 1 }} of {{ steps.length }}: {{ currentStep }}</div>
       </div>
 
-      <div class="field" [class.invalid]="isInvalid('cheese')">
-        <label>Cheese (choose one or more)</label>
-        <div class="checkbox-list">
-          <div class="checkbox-item">
-            <label>
-              <input type="checkbox" [checked]="selected.noCheese" (change)="toggleNoCheese($event.target.checked)" />
-              No Cheese
-            </label>
-          </div>
-          <div class="checkbox-item" *ngFor="let c of cheeses">
-            <label>
-              <input type="checkbox" [checked]="selected.cheeseIds.includes(c.id)" (change)="toggleCheese(c.id, $event.target.checked)" />
-              {{ c.label }}
-            </label>
+      <div class="step-body">
+        <!-- Bread step -->
+        <div *ngIf="stepIndex === 0">
+          <div class="field" [class.invalid]="isInvalid('bread')">
+            <label>Bread</label>
+            <select [(ngModel)]="selected.breadId" name="bread">
+              <option [ngValue]="null">-- choose --</option>
+              <option *ngFor="let b of breads" [ngValue]="b.id">{{ b.label }}</option>
+            </select>
+            <div class="error" *ngIf="breadsError">{{ breadsError }} <button type="button" (click)="retryList('breads')">Retry</button></div>
           </div>
         </div>
-        <div class="error" *ngIf="cheesesError">{{ cheesesError }} <button type="button" (click)="retryList('cheeses')">Retry</button></div>
+
+        <!-- Cheese step -->
+        <div *ngIf="stepIndex === 1">
+          <div class="field" [class.invalid]="isInvalid('cheese')">
+            <label>Cheese (choose one or more)</label>
+            <div class="checkbox-list">
+              <div class="checkbox-item">
+                <label>
+                  <input type="checkbox" [checked]="selected.noCheese" (change)="toggleNoCheese($event.target.checked)" />
+                  No Cheese
+                </label>
+              </div>
+              <div class="checkbox-item" *ngFor="let c of cheeses">
+                <label>
+                  <input type="checkbox" [checked]="selected.cheeseIds.includes(c.id)" (change)="toggleCheese(c.id, $event.target.checked)" />
+                  {{ c.label }}
+                </label>
+              </div>
+            </div>
+            <div class="error" *ngIf="cheesesError">{{ cheesesError }} <button type="button" (click)="retryList('cheeses')">Retry</button></div>
+          </div>
+        </div>
+
+        <!-- Dressing step -->
+        <div *ngIf="stepIndex === 2">
+          <div class="field" [class.invalid]="isInvalid('dressing')">
+            <label>Dressing (choose one or more)</label>
+            <div class="checkbox-list">
+              <div class="checkbox-item">
+                <label>
+                  <input type="checkbox" [checked]="selected.noDressing" (change)="toggleNoDressing($event.target.checked)" />
+                  No Dressing
+                </label>
+              </div>
+              <div class="checkbox-item" *ngFor="let d of dressings">
+                <label>
+                  <input type="checkbox" [checked]="selected.dressingIds.includes(d.id)" (change)="toggleDressing(d.id, $event.target.checked)" />
+                  {{ d.label }}
+                </label>
+              </div>
+            </div>
+            <div class="error" *ngIf="dressingsError">{{ dressingsError }} <button type="button" (click)="retryList('dressings')">Retry</button></div>
+          </div>
+        </div>
+
+        <!-- Meat step -->
+        <div *ngIf="stepIndex === 3">
+          <div class="field" [class.invalid]="isInvalid('meat')">
+            <label>Meat (choose one or more)</label>
+            <div class="checkbox-list">
+              <div class="checkbox-item">
+                <label>
+                  <input type="checkbox" [checked]="selected.noMeat" (change)="toggleNoMeat($event.target.checked)" />
+                  No Meat
+                </label>
+              </div>
+              <div class="checkbox-item" *ngFor="let m of meats">
+                <label>
+                  <input type="checkbox" [checked]="selected.meatIds.includes(m.id)" (change)="toggleMeat(m.id, $event.target.checked)" />
+                  {{ m.label }}
+                </label>
+              </div>
+            </div>
+            <div class="error" *ngIf="meatsError">{{ meatsError }} <button type="button" (click)="retryList('meats')">Retry</button></div>
+          </div>
+        </div>
+
+        <!-- Toppings step -->
+        <div *ngIf="stepIndex === 4">
+          <div class="field" [class.invalid]="isInvalid('topping')">
+            <label>Toppings</label>
+            <div class="checkbox-list">
+              <div class="checkbox-item">
+                <label>
+                  <input type="checkbox" [checked]="selected.noToppings" (change)="toggleNoToppings($event.target.checked)" />
+                  No Toppings
+                </label>
+              </div>
+              <div class="checkbox-item" *ngFor="let t of toppings">
+                <label>
+                  <input type="checkbox" [checked]="selected.toppingIds.includes(t.id)" (change)="toggleTopping(t.id, $event.target.checked)" />
+                  {{ t.label }}
+                </label>
+              </div>
+            </div>
+            <div class="error" *ngIf="toppingsError">{{ toppingsError }} <button type="button" (click)="retryList('toppings')">Retry</button></div>
+          </div>
+        </div>
       </div>
 
-      <div class="field" [class.invalid]="isInvalid('dressing')">
-        <label>Dressing (choose one or more)</label>
-        <div class="checkbox-list">
-          <div class="checkbox-item">
-            <label>
-              <input type="checkbox" [checked]="selected.noDressing" (change)="toggleNoDressing($event.target.checked)" />
-              No Dressing
-            </label>
-          </div>
-          <div class="checkbox-item" *ngFor="let d of dressings">
-            <label>
-              <input type="checkbox" [checked]="selected.dressingIds.includes(d.id)" (change)="toggleDressing(d.id, $event.target.checked)" />
-              {{ d.label }}
-            </label>
-          </div>
-        </div>
-        <div class="error" *ngIf="dressingsError">{{ dressingsError }} <button type="button" (click)="retryList('dressings')">Retry</button></div>
-      </div>
-
-      <div class="field" [class.invalid]="isInvalid('meat')">
-        <label>Meat (choose one or more)</label>
-        <div class="checkbox-list">
-          <div class="checkbox-item">
-            <label>
-              <input type="checkbox" [checked]="selected.noMeat" (change)="toggleNoMeat($event.target.checked)" />
-              No Meat
-            </label>
-          </div>
-          <div class="checkbox-item" *ngFor="let m of meats">
-            <label>
-              <input type="checkbox" [checked]="selected.meatIds.includes(m.id)" (change)="toggleMeat(m.id, $event.target.checked)" />
-              {{ m.label }}
-            </label>
-          </div>
-        </div>
-        <div class="error" *ngIf="meatsError">{{ meatsError }} <button type="button" (click)="retryList('meats')">Retry</button></div>
-      </div>
-
-      <div class="field" [class.invalid]="isInvalid('topping')">
-        <label>Toppings</label>
-        <div class="checkbox-list">
-          <div class="checkbox-item">
-            <label>
-              <input type="checkbox" [checked]="selected.noToppings" (change)="toggleNoToppings($event.target.checked)" />
-              No Toppings
-            </label>
-          </div>
-          <div class="checkbox-item" *ngFor="let t of toppings">
-            <label>
-              <input type="checkbox" [checked]="selected.toppingIds.includes(t.id)" (change)="toggleTopping(t.id, $event.target.checked)" />
-              {{ t.label }}
-            </label>
-          </div>
-        </div>
-        <div class="error" *ngIf="toppingsError">{{ toppingsError }} <button type="button" (click)="retryList('toppings')">Retry</button></div>
+      <div class="step-controls" style="margin-top:12px;display:flex;gap:8px;align-items:center;">
+        <button type="button" class="btn btn-outline-secondary" (click)="prevStep()" [disabled]="isFirstStep">Back</button>
+        <button type="button" class="btn btn-primary" (click)="isLastStep ? submit() : nextStep()" [disabled]="submitting || (stepIndex===0 && !selected.breadId)">{{ isLastStep ? (submitting ? 'Saving…' : 'Submit') : 'Next' }}</button>
+        <a routerLink="/sandwiches" class="link-to-list" style="margin-left:12px;">Back to list</a>
       </div>
     </div>
 
