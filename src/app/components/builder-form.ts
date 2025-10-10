@@ -149,8 +149,12 @@ export class BuilderForm {
               if (!res.ok) return;
               const json = await res.json().catch(() => null);
                 if (Array.isArray(json)) {
+                  // Normalize labels to Title Case so the UI looks consistent even
+                  // when the fallback fetch is used instead of the HttpClient.
+                  const normalized = (json as any[]).map(o => ({ id: o.id, label: (o.label || o.name || '') }))
+                    .map(o => ({ id: o.id, label: (o.label || '') .toString().replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()) }));
                   // @ts-ignore
-                  (this as any)[field] = json;
+                  (this as any)[field] = normalized;
                   this.cd.detectChanges();
                 }
             } catch (e) {

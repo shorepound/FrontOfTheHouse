@@ -6,7 +6,12 @@
   <!-- Show a lightweight loading overlay instead of removing the form entirely
        This avoids the server-rendered form appearing and then disappearing
        during client bootstrap/hydration when `loading` toggles. -->
-  <div *ngIf="loading" class="loading-overlay">Loading options…</div>
+  <div *ngIf="loading" class="loading-overlay" role="status" aria-live="polite">
+    <svg class="spinner" width="20" height="20" viewBox="0 0 50 50" aria-hidden="true">
+      <circle cx="25" cy="25" r="20" fill="none" stroke="#3b82f6" stroke-width="5" stroke-linecap="round" stroke-dasharray="31.4 31.4" transform="rotate(-90 25 25)"></circle>
+    </svg>
+    <span>Loading options…</span>
+  </div>
 
   <div *ngIf="!loading && (breadsError == 'Failed to load breads' && cheesesError == 'Failed to load cheeses' && dressingsError == 'Failed to load dressings' && meatsError == 'Failed to load meats' && toppingsError == 'Failed to load toppings')" class="warning">
     Options are unavailable right now. This usually means the backend options database isn't reachable. You can try again.
@@ -104,14 +109,15 @@
 
     <div class="actions">
       <div class="field" style="margin-right:12px;">
-        <label>Name (optional)</label>
-        <input type="text" [(ngModel)]="selected.name" name="name" placeholder="e.g. The Club" />
+        <label for="sandwich-name">Name (optional)</label>
+        <input id="sandwich-name" type="text" [(ngModel)]="selected.name" name="name" placeholder="e.g. The Club" maxlength="200" aria-describedby="name-help" />
+        <div id="name-help" class="sr-only">Maximum 200 characters.</div>
       </div>
       <div class="field" style="margin-right:12px;">
         <label>Price (optional)</label>
         <input type="number" step="0.01" min="0" [(ngModel)]="selected.price" name="price" placeholder="e.g. 7.50" />
       </div>
-  <button class="btn btn-primary" type="submit" (click)="submit()" [disabled]="!canSubmit() || submitting">{{ submitting ? 'Saving…' : 'Submit' }}</button>
+  <button class="btn btn-primary" type="submit" (click)="submit()" [disabled]="!canSubmit() || submitting || loading">{{ submitting ? 'Saving…' : 'Submit' }}</button>
       <a routerLink="/sandwiches" class="link-to-list">Back to list</a>
     </div>
   </form>
