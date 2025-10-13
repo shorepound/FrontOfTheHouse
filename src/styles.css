@@ -12,8 +12,9 @@ body {
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
-    color: #06629f;
+    color: #fff;
 }
+
 
 .form-group {
     margin-bottom: 15px;
@@ -115,7 +116,7 @@ nav a { margin-bottom: 12px; display: inline-block; }
 }
 
 /* Stepper styles */
-.stepper { border: 1px solid rgba(6,98,159,0.06); padding: 12px; border-radius: 8px; background: #fff; margin: 16px 0; }
+.stepper { border: 1px solid rgba(6,98,159,0.06); padding: 12px; border-radius: 8px; background: #fff; margin: 16px 0; color: #000}
 .step-header .step-name { font-weight: 700; margin-bottom: 8px; }
 .step-body { margin: 10px 0 }
 .step-controls { display: flex; gap: 8px; align-items: center; }
