@@ -64,7 +64,7 @@ export class BuilderForm {
   loading = true;
 
   // Stepper UI state: current step index (0-based)
-  steps = [ 'Bread', 'Cheese', 'Dressing', 'Meat', 'Toppings' ];
+  steps = [ 'Bread', 'Cheese', 'Dressing', 'Meat', 'Toppings', 'Name & Price' ];
   stepIndex = 0;
 
   // Convenience getters
