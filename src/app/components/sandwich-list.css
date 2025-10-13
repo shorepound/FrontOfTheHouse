@@ -1,9 +1,9 @@
 /* Styles for sandwich list component */
 nav a { margin-bottom: 12px; display: inline-block; }
 
-.sandwich-table{width:100%;border-collapse:collapse}
+.sandwich-table{width:100%;border-collapse:collapse; background-color: aliceblue; border-radius: 3px;}
 .sandwich-table th,.sandwich-table td{padding:8px 10px;border-bottom:1px solid #eee}
-.sandwich-table .col-price{text-align:right;white-space:nowrap}
+.sandwich-table .col-price{text-align:right;white-space:nowrap;}
 
 .sandwich-table .col-actions{width:120px;text-align:right}
 .icon-btn{display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;padding:6px;border-radius:6px;color:var(--text-color,#333);cursor:pointer}
