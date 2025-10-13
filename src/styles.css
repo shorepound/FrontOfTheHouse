@@ -110,7 +110,8 @@ nav a { margin-bottom: 12px; display: inline-block; }
 }
 
 /* Stepper styles */
-.stepper { border: 1px solid rgba(6,98,159,0.06); padding: 12px; border-radius: 8px; background: #fff; }
+.stepper { border: 1px solid rgba(6,98,159,0.06); padding: 12px; border-radius: 8px; background: #fff; margin: 16px 0; }
 .step-header .step-name { font-weight: 700; margin-bottom: 8px; }
-.step-body { margin-top: 8px; }
+.step-body { margin: 10px 0 }
+.step-controls { display: flex; gap: 8px; align-items: center; }
 .step-controls .btn { min-width: 88px; }
