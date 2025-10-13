@@ -2,3 +2,18 @@
 select { display: block; margin-bottom: 20px; }
 button[type="submit"] { border-radius: 6px; }
 .link-to-list { margin-left: 12px; }
+
+/* Review action row spacing */
+.review-actions { margin-top: 12px; display: flex; gap: 8px; align-items: center; }
+
+/* Inline checkbox spacing next to select */
+.inline-checkbox { margin-left: 12px; }
+
+/* Step controls spacing */
+.step-controls { margin-top: 12px; display: flex; gap: 8px; align-items: center; }
+
+/* Small spacing for actions fields */
+.actions .field { margin-right: 12px; display: inline-block; vertical-align: top; }
+
+/* required asterisk */
+.actions .field label span { color: #b00; }
