@@ -490,7 +490,11 @@ export class BuilderForm {
         try { this.cd.detectChanges(); } catch { }
         // refresh sandwich list so user sees their new sandwich
         this.sandwiches.list().subscribe({ next: () => {}, error: () => {} });
-        // auto-clear success after a short delay
+        // show the success briefly, then navigate back to the list so users see their saved sandwich
+        setTimeout(() => {
+          try { this.router.navigate(['/sandwiches']); } catch { }
+        }, 1200);
+        // auto-clear success after a short delay (keeps banner tidy in case navigation is prevented)
         setTimeout(() => this.success = null, 3500);
       } else if (res.status === 400) {
         console.debug('BuilderForm: validation error 400');
