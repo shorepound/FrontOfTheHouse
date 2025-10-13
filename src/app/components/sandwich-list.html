@@ -41,13 +41,19 @@
               <path d="M20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" fill="currentColor" />
             </svg>
           </a>
-          <button class="icon-btn icon-delete" type="button" (click)="deleteSandwich(s.id)" [disabled]="deleting.has(s.id)" [attr.title]="deleting.has(s.id) ? 'Deleting…' : 'Delete ' + s.name" [attr.aria-label]="deleting.has(s.id) ? 'Deleting ' + s.name : 'Delete ' + s.name">
-            <!-- trash / delete icon -->
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12z" fill="currentColor" />
-              <path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor" />
-            </svg>
-          </button>
+          <ng-container *ngIf="pendingDelete !== s.id; else confirmBlock">
+            <button class="icon-btn icon-delete" type="button" (click)="deleteSandwich(s.id)" [disabled]="deleting.has(s.id)" [attr.title]="deleting.has(s.id) ? 'Deleting…' : 'Delete ' + s.name" [attr.aria-label]="deleting.has(s.id) ? 'Deleting ' + s.name : 'Delete ' + s.name">
+              <!-- trash / delete icon -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12z" fill="currentColor" />
+                <path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor" />
+              </svg>
+            </button>
+          </ng-container>
+          <ng-template #confirmBlock>
+            <button type="button" class="btn btn-outline-secondary" (click)="deleteSandwich(s.id)" [disabled]="deleting.has(s.id)">Confirm</button>
+            <button type="button" class="btn btn-link" (click)="cancelPendingDelete()">Cancel</button>
+          </ng-template>
         </td>
       </tr>
     </tbody>

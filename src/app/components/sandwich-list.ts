@@ -15,6 +15,8 @@ export class SandwichList {
   sandwiches: Sandwich[] = [];
   loading = false;
   deleting = new Set<number>();
+  // When a user clicks delete, we set a pending id and show inline Confirm/Cancel
+  pendingDelete: number | null = null;
 
   // Helper: parse a server description like
   // "Cheese: cheddar; Dressing: mayo; Toppings: lettuce, tomato"
@@ -52,7 +54,15 @@ export class SandwichList {
   }
 
   deleteSandwich(id: number) {
-    if (!confirm('Delete this sandwich? This cannot be undone.')) return;
+    // Inline confirm flow: if this id is not pending, mark it pending and return
+    if (this.pendingDelete !== id) {
+      this.pendingDelete = id;
+      try { this.cd.detectChanges(); } catch {}
+      return;
+    }
+
+    // otherwise user confirmed; proceed with deletion
+    this.pendingDelete = null;
     this.deleting.add(id);
     try { this.cd.detectChanges(); } catch {}
     this.svc.delete(id).subscribe({
@@ -68,5 +78,10 @@ export class SandwichList {
         alert('Failed to delete sandwich');
       }
     });
+  }
+
+  cancelPendingDelete() {
+    this.pendingDelete = null;
+    try { this.cd.detectChanges(); } catch {}
   }
 }
