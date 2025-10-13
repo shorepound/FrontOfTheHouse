@@ -7,6 +7,11 @@ body {
     align-items: center; 
     min-height: 100vh; 
     background-color: azure;
+    /* Use public/bg.png if present (served at /bg.png). Falls back to azure. */
+    background-image: url('/rbbg.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
     color: #06629f;
 }
 
