@@ -13,6 +13,9 @@ nav a { margin-bottom: 12px; display: inline-block; }
 .icon-btn[disabled]{opacity:0.5;cursor:not-allowed}
 .icon-delete{color:#c0392b}
 
+/* spacing for the delete button beside the edit icon */
+.icon-btn.icon-delete { margin-left: 8px; }
+
 .desc-block{display:flex;flex-direction:column;gap:6px}
 .desc-group{display:flex;align-items:center;gap:8px}
 .group-label{font-weight:600;margin-right:6px;color:#333;white-space:nowrap}
