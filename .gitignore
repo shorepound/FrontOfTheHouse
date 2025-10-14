@@ -37,6 +37,14 @@ yarn-error.log
 testem.log
 /typings
 
+# Local dev logs and pid files
+*.log
+*.pid
+
+# Build artifact dirs
+obj/
+public/
+
 # System files
 .DS_Store
 Thumbs.db
