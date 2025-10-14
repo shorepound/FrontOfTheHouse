@@ -227,6 +227,8 @@ export class BuilderForm {
           // Prefill only name and price/description for now.
           this.selected.name = s.name ?? null;
           this.selected.price = s.price ?? null;
+          // prefer explicit toasted flag from server when editing
+          this.selected.toasted = !!s.toasted;
           // keep the full description for a read-only review view
           this.editingDescription = s.description ?? null;
           // scroll/focus to form to make it apparent
@@ -432,6 +434,7 @@ export class BuilderForm {
       const payload = {
         name: this.selected.name,
         description: null as string | null,
+        toasted: this.selected.toasted,
         price: this.selected.price
       };
       // use HttpClient wrapper
@@ -472,6 +475,7 @@ export class BuilderForm {
         dressingIds: this.selected.dressingIds,
         meatIds: this.selected.meatIds,
         toppingIds: this.selected.toppingIds,
+        toasted: this.selected.toasted,
         price: this.selected.price
       }),
       signal: ac.signal

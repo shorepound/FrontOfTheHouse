@@ -23,19 +23,26 @@ export class SandwichList {
   // into an array of { label, items[] } so the UI can render them nicely.
   parseDescription(desc: string | null) {
     if (!desc) return [] as Array<{ label: string; items: string[] }>;
-    const hasToasted = /\(toasted\)/i.test(desc);
     return desc.split(';').map(part => part.trim()).filter(Boolean).map(part => {
       const idx = part.indexOf(':');
       if (idx === -1) return { label: part, items: [] };
       const label = part.substring(0, idx).trim();
-      let items = part.substring(idx + 1).split(',').map(s => s.trim()).filter(Boolean);
-      // If this is the bread group and the overall description marks toasted,
-      // ensure each bread item reflects that (e.g. "pumpernickel (toasted)").
-      if (/^bread$/i.test(label) && hasToasted) {
-        items = items.map(it => /\(toasted\)/i.test(it) ? it : `${it} (toasted)`);
-      }
+      const items = part.substring(idx + 1).split(',').map(s => s.trim()).filter(Boolean);
       return { label, items };
     });
+  }
+
+  renderGroups(s: Sandwich) {
+    const desc = s.description ?? null;
+    const groups = this.parseDescription(desc);
+    if (typeof s.toasted !== 'undefined' && s.toasted !== null && s.toasted === true) {
+      for (const g of groups) {
+        if (/^bread$/i.test(g.label)) {
+          g.items = g.items.map(it => /\(toasted\)/i.test(it) ? it : `${it} (toasted)`);
+        }
+      }
+    }
+    return groups;
   }
 
   constructor(private svc: SandwichService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef) {}
