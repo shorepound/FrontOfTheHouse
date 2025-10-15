@@ -122,5 +122,15 @@ nav a { margin-bottom: 12px; display: inline-block; }
 .step-controls { display: flex; gap: 8px; align-items: center; }
 .step-controls .btn { min-width: 88px; }
 
-main h1 { font-family: 'Courier New', Courier, monospace; color:#b7f2c9; size: 126px !important; font-weight: bolder;}
-section h2 {color: #fff; text-decoration: wavy;}
+main h1 { font-family: 'Courier New', Courier, monospace; color:#b7f2c9; font-weight: bolder;}
+section h2 {color: #fff;}
+
+table tr:nth-child(even) {
+background-color: rgb(13 110 253 / 0%); 
+}
+
+table tr:nth-child(odd) {
+background-color: #ffffff; 
+}
+
+nav a { margin-bottom: 12px; display: inline-block; background-color: aliceblue; color: black; padding: 6px 12px; border-radius: 6px; text-decoration: none; }
