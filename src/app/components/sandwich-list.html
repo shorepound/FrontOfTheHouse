@@ -19,7 +19,7 @@
         <td>
           <ng-container *ngIf="s.description; else noDesc">
             <div class="desc-block">
-              <div *ngFor="let group of parseDescription(s.description)" class="desc-group">
+              <div *ngFor="let group of renderGroups(s)" class="desc-group">
                 <div class="group-label">{{ group.label }}:</div>
                 <div class="group-items">
                   <span *ngFor="let it of group.items" class="chip">{{ it }}</span>
