@@ -37,6 +37,18 @@
         <div class="step-header">
           <div class="step-name">Step {{ stepIndex + 1 }} of {{ steps.length }}: {{ currentStep }}</div>
         </div>
+        <!-- Live selections summary: shows current choices so users don't forget earlier steps -->
+        <div class="selection-summary" aria-live="polite">
+          <h4>Your selections</h4>
+          <ul>
+            <li *ngFor="let s of selectionSummary">
+              <strong>{{ s.name }}:</strong>
+              <span *ngIf="s.values.length === 0">(none)</span>
+              <span *ngIf="s.values.length === 1">{{ s.values[0] }}</span>
+              <span *ngIf="s.values.length > 1">{{ s.values.join(', ') }}</span>
+            </li>
+          </ul>
+        </div>
 
         <div class="step-body">
         <!-- Bread step -->

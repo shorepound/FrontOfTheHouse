@@ -402,6 +402,34 @@ export class BuilderForm {
     }
   }
 
+  // Provide a runtime summary of the user's current selections so the
+  // UI can render a compact, always-visible review while the user steps
+  // through the builder. This helps when users forget earlier choices.
+  get selectionSummary() {
+    const summary: Array<{ name: string; values: string[] }> = [];
+
+    const breadLabel = this.breads.find(b => b.id === this.selected.breadId)?.label ?? null;
+    const breadValue = this.selected.breadId ? (breadLabel ? (this.selected.toasted ? `${breadLabel} (toasted)` : breadLabel) : '(unknown)') : '(none)';
+    summary.push({ name: 'Bread', values: [breadValue] });
+
+    const cheeseVals = this.selected.noCheese ? ['No Cheese'] : (this.selected.cheeseIds?.map(id => this.cheeses.find(c => c.id === id)?.label ?? '(unknown)') ?? []);
+    summary.push({ name: 'Cheese', values: cheeseVals.length ? cheeseVals : ['(none)'] });
+
+    const dressingVals = this.selected.noDressing ? ['No Dressing'] : (this.selected.dressingIds?.map(id => this.dressings.find(d => d.id === id)?.label ?? '(unknown)') ?? []);
+    summary.push({ name: 'Dressing', values: dressingVals.length ? dressingVals : ['(none)'] });
+
+    const meatVals = this.selected.noMeat ? ['No Meat'] : (this.selected.meatIds?.map(id => this.meats.find(m => m.id === id)?.label ?? '(unknown)') ?? []);
+    summary.push({ name: 'Meat', values: meatVals.length ? meatVals : ['(none)'] });
+
+    const toppingVals = this.selected.noToppings ? ['No Toppings'] : (this.selected.toppingIds?.map(id => this.toppings.find(t => t.id === id)?.label ?? '(unknown)') ?? []);
+    summary.push({ name: 'Toppings', values: toppingVals.length ? toppingVals : ['(none)'] });
+
+    if (this.selected.name) summary.push({ name: 'Name', values: [this.selected.name] });
+    if (this.selected.price != null) summary.push({ name: 'Price', values: [`$${Number(this.selected.price).toFixed(2)}`] });
+
+    return summary;
+  }
+
   clearMessages() {
     this.success = null;
     this.error = null;
