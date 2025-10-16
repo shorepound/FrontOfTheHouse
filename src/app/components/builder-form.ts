@@ -432,7 +432,6 @@ export class BuilderForm {
 
   // UI state for the selection summary panel
   selectionCollapsed = false;
-  selectionSticky = false;
 
   toggleSelectionCollapsed() {
     this.selectionCollapsed = !this.selectionCollapsed;
@@ -440,21 +439,11 @@ export class BuilderForm {
     try { this.cd.detectChanges(); } catch {}
   }
 
-  toggleSelectionSticky() {
-    this.selectionSticky = !this.selectionSticky;
-    try { localStorage.setItem('builder.selectionSticky', this.selectionSticky ? '1' : '0'); } catch {}
-    try { this.cd.detectChanges(); } catch {}
-  }
-
   ngAfterViewInit(): void {
-    // restore persisted preferences if available
+    // restore persisted preference if available
     try {
       const c = localStorage.getItem('builder.selectionCollapsed');
       if (c !== null) this.selectionCollapsed = c === '1';
-    } catch {}
-    try {
-      const s = localStorage.getItem('builder.selectionSticky');
-      if (s !== null) this.selectionSticky = s === '1';
     } catch {}
     try { this.cd.detectChanges(); } catch {}
   }

@@ -38,12 +38,14 @@
           <div class="step-name">Step {{ stepIndex + 1 }} of {{ steps.length }}: {{ currentStep }}</div>
         </div>
         <!-- Live selections summary: shows current choices so users don't forget earlier steps -->
-        <div class="selection-summary" [class.collapsed]="selectionCollapsed" [class.sticky]="selectionSticky" role="region" aria-label="Current selections" [attr.aria-hidden]="selectionCollapsed">
+  <div class="selection-summary" [class.collapsed]="selectionCollapsed" role="region" aria-label="Current selections" [attr.aria-hidden]="selectionCollapsed">
           <div class="summary-header">
             <h4>Your selections</h4>
             <div class="summary-controls">
-              <button type="button" class="btn btn-sm btn-outline-secondary" (click)="toggleSelectionSticky()" [class.active]="selectionSticky" title="Toggle sticky">{{ selectionSticky ? 'Sticky' : 'Pin' }}</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary" (click)="toggleSelectionCollapsed()" title="Collapse">{{ selectionCollapsed ? 'Expand' : 'Collapse' }}</button>
+              <button type="button" class="icon-btn" (click)="toggleSelectionCollapsed()" aria-expanded="{{ !selectionCollapsed }}" aria-label="Toggle collapse" title="Toggle collapse">
+                <svg *ngIf="!selectionCollapsed" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <svg *ngIf="selectionCollapsed" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
             </div>
           </div>
           <div class="summary-body" *ngIf="!selectionCollapsed">
