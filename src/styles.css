@@ -134,3 +134,38 @@ background-color: #ffffff;
 }
 
 nav a { margin-bottom: 12px; display: inline-block; background-color: aliceblue; color: black; padding: 6px 12px; border-radius: 6px; text-decoration: none; }
+
+/* selection-summary styles: compact panel shown alongside the stepper on wide screens
+     and full-width above the controls on narrow screens */
+.selection-summary {
+        background: #f8fafc;
+        border: 1px solid rgba(6,98,159,0.06);
+        padding: 10px 12px;
+        border-radius: 8px;
+        margin: 8px 0 16px 0;
+}
+.selection-summary h4 { margin: 0 0 8px 0; font-size: 1rem; }
+.selection-summary ul { list-style: none; padding: 0; margin: 0; font-size: 0.95rem; }
+.selection-summary li { margin: 4px 0; color: #0b2447; }
+.selection-summary strong { display: inline-block; width: 86px; color: #084c76; }
+
+
+
+    /* Collapsed panel */
+    .selection-summary.collapsed { max-height: 40px; overflow: hidden; padding-bottom: 0; }
+    .selection-summary .summary-header { display: flex; align-items: center; justify-content: space-between; }
+    .selection-summary .summary-controls { display: flex; gap: 6px; }
+    .selection-summary .summary-controls .btn { padding: 4px 8px; font-size: 0.85rem; }
+    .selection-summary .summary-controls .btn.active { background: #06629f; color: white; border-color: #06629f; }
+
+    /* Sticky behavior: simple position:sticky on wide screens; for mobile this is disabled */
+    @media (min-width: 900px) {
+        .selection-summary.sticky { position: sticky; top: 12px; align-self: start; }
+    }
+
+    /* Chips */
+    .chip { display: inline-block; background: #e9f5ff; color: #08304b; padding: 4px 8px; margin: 0 6px 6px 0; border-radius: 16px; font-size: 0.85rem; }
+    .chips { display: inline-flex; flex-wrap: wrap; align-items: center; }
+
+    .selection-icon { display: inline-flex; width: 16px; height: 16px; margin-right: 6px; vertical-align: middle; }
+    .selection-icon svg { width: 16px; height: 16px; stroke-width: 1.4; }

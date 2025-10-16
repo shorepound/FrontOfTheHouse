@@ -1,4 +1,4 @@
-import { Component, Inject, ChangeDetectorRef } from '@angular/core';
+import { Component, Inject, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -428,6 +428,35 @@ export class BuilderForm {
     if (this.selected.price != null) summary.push({ name: 'Price', values: [`$${Number(this.selected.price).toFixed(2)}`] });
 
     return summary;
+  }
+
+  // UI state for the selection summary panel
+  selectionCollapsed = false;
+  selectionSticky = false;
+
+  toggleSelectionCollapsed() {
+    this.selectionCollapsed = !this.selectionCollapsed;
+    try { localStorage.setItem('builder.selectionCollapsed', this.selectionCollapsed ? '1' : '0'); } catch {}
+    try { this.cd.detectChanges(); } catch {}
+  }
+
+  toggleSelectionSticky() {
+    this.selectionSticky = !this.selectionSticky;
+    try { localStorage.setItem('builder.selectionSticky', this.selectionSticky ? '1' : '0'); } catch {}
+    try { this.cd.detectChanges(); } catch {}
+  }
+
+  ngAfterViewInit(): void {
+    // restore persisted preferences if available
+    try {
+      const c = localStorage.getItem('builder.selectionCollapsed');
+      if (c !== null) this.selectionCollapsed = c === '1';
+    } catch {}
+    try {
+      const s = localStorage.getItem('builder.selectionSticky');
+      if (s !== null) this.selectionSticky = s === '1';
+    } catch {}
+    try { this.cd.detectChanges(); } catch {}
   }
 
   clearMessages() {
