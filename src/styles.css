@@ -138,22 +138,24 @@ nav a { margin-bottom: 12px; display: inline-block; background-color: aliceblue;
 /* selection-summary styles: compact panel shown alongside the stepper on wide screens
      and full-width above the controls on narrow screens */
 .selection-summary {
-        background: #f8fafc;
-        border: 1px solid rgba(6,98,159,0.06);
-        padding: 10px 12px;
-        border-radius: 8px;
-        margin: 8px 0 16px 0;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.04);
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin: 8px 0 12px 0;
 }
-.selection-summary h4 { margin: 0 0 8px 0; font-size: 1rem; }
-.selection-summary ul { list-style: none; padding: 0; margin: 0; font-size: 0.95rem; }
-.selection-summary li { margin: 4px 0; color: #0b2447; }
-.selection-summary strong { display: inline-block; width: 86px; color: #084c76; }
+.selection-summary h4 { margin: 0; font-size: 0.98rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
+.selection-summary .count { font-weight: 600; color: #666; font-size: 0.92rem; }
+.selection-summary ul { list-style: none; padding: 8px 0 0 0; margin: 0; font-size: 0.95rem; }
+.selection-summary li { margin: 6px 0; color: #161616; }
+.selection-summary strong { display: inline-block; width: 84px; color: #333; font-weight: 600; }
 
 
 
     /* Collapsed panel */
     .selection-summary.collapsed { max-height: 40px; overflow: hidden; padding-bottom: 0; }
-    .selection-summary .summary-header { display: flex; align-items: center; justify-content: space-between; }
+    .selection-summary .summary-header { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+    .selection-summary .summary-header.simple { border-bottom: 1px solid rgba(0,0,0,0.04); padding-bottom: 6px; }
     .selection-summary .summary-controls { display: flex; gap: 6px; }
     .selection-summary .summary-controls .btn { padding: 4px 8px; font-size: 0.85rem; }
     .selection-summary .summary-controls .btn.active { background: #06629f; color: white; border-color: #06629f; }
@@ -161,7 +163,7 @@ nav a { margin-bottom: 12px; display: inline-block; background-color: aliceblue;
     /* Sticky behavior removed: we keep a simple responsive layout without pinning */
 
     /* Chips */
-    .chip { display: inline-block; background: #e9f5ff; color: #08304b; padding: 4px 8px; margin: 0 6px 6px 0; border-radius: 16px; font-size: 0.85rem; }
+    .chip { display: inline-block; background: #f1f3f5; color: #161616; padding: 4px 8px; margin: 0 6px 6px 0; border-radius: 999px; font-size: 0.85rem; }
     .chips { display: inline-flex; flex-wrap: wrap; align-items: center; }
 
     .selection-icon { display: inline-flex; width: 16px; height: 16px; margin-right: 6px; vertical-align: middle; }

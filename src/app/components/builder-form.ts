@@ -430,6 +430,17 @@ export class BuilderForm {
     return summary;
   }
 
+  // compute a compact count for the panel header
+  get selectionCount() {
+    let cnt = 0;
+    if (this.selected.breadId) cnt += 1;
+    if (this.selected.noCheese) cnt += 1; else cnt += (this.selected.cheeseIds?.length ?? 0);
+    if (this.selected.noDressing) cnt += 1; else cnt += (this.selected.dressingIds?.length ?? 0);
+    if (this.selected.noMeat) cnt += 1; else cnt += (this.selected.meatIds?.length ?? 0);
+    if (this.selected.noToppings) cnt += 1; else cnt += (this.selected.toppingIds?.length ?? 0);
+    return cnt;
+  }
+
   // UI state for the selection summary panel
   selectionCollapsed = false;
 
