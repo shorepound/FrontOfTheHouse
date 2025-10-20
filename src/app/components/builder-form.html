@@ -38,7 +38,7 @@
           <div class="step-name">Step {{ stepIndex + 1 }} of {{ steps.length }}: {{ currentStep }}</div>
         </div>
         <!-- Live selections summary: shows current choices so users don't forget earlier steps -->
-        <div class="selection-summary" [class.collapsed]="selectionCollapsed" role="region" aria-label="Current selections" [attr.aria-hidden]="selectionCollapsed">
+  <div class="selection-summary" [class.collapsed]="selectionCollapsed" [class.expanded]="!selectionCollapsed" role="region" aria-label="Current selections" [attr.aria-hidden]="selectionCollapsed">
           <div class="summary-header simple">
             <h4>Your selections <span class="count">({{ selectionCount }})</span></h4>
             <div class="summary-controls">
@@ -48,7 +48,7 @@
               </button>
             </div>
           </div>
-          <div class="summary-body" *ngIf="!selectionCollapsed">
+          <div class="summary-body">
             <ul>
               <li *ngFor="let s of selectionSummary">
                 <strong>{{ s.name }}:</strong>

@@ -176,3 +176,15 @@ nav a { margin-bottom: 12px; display: inline-block; background-color: aliceblue;
     .icon-btn:focus { outline: 3px solid rgba(6,98,159,0.14); }
     .icon-btn.active { background: #06629f; }
     .icon-btn.active svg { color: #fff; }
+
+    /* Animated expand/collapse for selection body */
+    .selection-summary .summary-body {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: max-height 280ms cubic-bezier(.2,.8,.2,1), opacity 180ms ease-in-out;
+    }
+    .selection-summary.expanded .summary-body {
+        max-height: 420px; /* large enough to show content; overflows gracefully */
+        opacity: 1;
+    }
