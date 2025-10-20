@@ -38,16 +38,26 @@
           <div class="step-name">Step {{ stepIndex + 1 }} of {{ steps.length }}: {{ currentStep }}</div>
         </div>
         <!-- Live selections summary: shows current choices so users don't forget earlier steps -->
-        <div class="selection-summary" aria-live="polite">
-          <h4>Your selections</h4>
-          <ul>
-            <li *ngFor="let s of selectionSummary">
-              <strong>{{ s.name }}:</strong>
-              <span *ngIf="s.values.length === 0">(none)</span>
-              <span *ngIf="s.values.length === 1">{{ s.values[0] }}</span>
-              <span *ngIf="s.values.length > 1">{{ s.values.join(', ') }}</span>
-            </li>
-          </ul>
+  <div class="selection-summary" [class.collapsed]="selectionCollapsed" [class.expanded]="!selectionCollapsed" role="region" aria-label="Current selections" [attr.aria-hidden]="selectionCollapsed">
+          <div class="summary-header simple">
+            <h4>Your selections <span class="count">({{ selectionCount }})</span></h4>
+            <div class="summary-controls">
+              <button type="button" class="icon-btn" (click)="toggleSelectionCollapsed()" aria-expanded="{{ !selectionCollapsed }}" aria-label="Show or hide selections" title="Show or hide selections">
+                <svg *ngIf="!selectionCollapsed" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <svg *ngIf="selectionCollapsed" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="summary-body">
+            <ul>
+              <li *ngFor="let s of selectionSummary">
+                <strong>{{ s.name }}:</strong>
+                <ng-container *ngIf="s.values.length === 0">(none)</ng-container>
+                <ng-container *ngIf="s.values.length === 1"><span class="chip">{{ s.values[0] }}</span></ng-container>
+                <ng-container *ngIf="s.values.length > 1"><span class="chips"><span *ngFor="let v of s.values" class="chip">{{ v }}</span></span></ng-container>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div class="step-body">

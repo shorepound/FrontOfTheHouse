@@ -1,4 +1,4 @@
-import { Component, Inject, ChangeDetectorRef } from '@angular/core';
+import { Component, Inject, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -428,6 +428,35 @@ export class BuilderForm {
     if (this.selected.price != null) summary.push({ name: 'Price', values: [`$${Number(this.selected.price).toFixed(2)}`] });
 
     return summary;
+  }
+
+  // compute a compact count for the panel header
+  get selectionCount() {
+    let cnt = 0;
+    if (this.selected.breadId) cnt += 1;
+    if (this.selected.noCheese) cnt += 1; else cnt += (this.selected.cheeseIds?.length ?? 0);
+    if (this.selected.noDressing) cnt += 1; else cnt += (this.selected.dressingIds?.length ?? 0);
+    if (this.selected.noMeat) cnt += 1; else cnt += (this.selected.meatIds?.length ?? 0);
+    if (this.selected.noToppings) cnt += 1; else cnt += (this.selected.toppingIds?.length ?? 0);
+    return cnt;
+  }
+
+  // UI state for the selection summary panel
+  selectionCollapsed = false;
+
+  toggleSelectionCollapsed() {
+    this.selectionCollapsed = !this.selectionCollapsed;
+    try { localStorage.setItem('builder.selectionCollapsed', this.selectionCollapsed ? '1' : '0'); } catch {}
+    try { this.cd.detectChanges(); } catch {}
+  }
+
+  ngAfterViewInit(): void {
+    // restore persisted preference if available
+    try {
+      const c = localStorage.getItem('builder.selectionCollapsed');
+      if (c !== null) this.selectionCollapsed = c === '1';
+    } catch {}
+    try { this.cd.detectChanges(); } catch {}
   }
 
   clearMessages() {
