@@ -13,7 +13,8 @@ import { timeout } from 'rxjs/operators';
   selector: 'builder-form',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './builder-form.html'
+  templateUrl: './builder-form.html',
+  styleUrls: ['./builder-form.css']
 })
 export class BuilderForm {
   breads: Option[] = [];
@@ -107,6 +108,11 @@ export class BuilderForm {
     try { this.cd.detectChanges(); } catch {}
   }
 
+  cancelEdit() {
+    // Navigate back to the sandwich list
+    this.router.navigate(['/sandwiches']);
+  }
+
   // Parse a server description string and try to match labels to option ids
   populateSelectionsFromDescription(desc: string) {
     // Reset selections
@@ -129,13 +135,29 @@ export class BuilderForm {
           const bname = items.join(', ');
           const toastedMatch = /\(toasted\)$/i.test(bname);
           const clean = bname.replace(/\(toasted\)$/i, '').trim();
-          const breadOpt = this.breads.find(b => b.label.toLowerCase() === clean.toLowerCase());
-          if (breadOpt) this.selected.breadId = breadOpt.id;
-          if (toastedMatch) this.selected.toasted = true;
+          console.debug('Looking for bread:', clean, 'in options:', this.breads?.map(b => b.label));
+          const breadOpt = this.breads?.find(b => b.label.toLowerCase() === clean.toLowerCase());
+          if (breadOpt) {
+            this.selected.breadId = breadOpt.id;
+            console.debug('Found bread:', breadOpt.label, 'id:', breadOpt.id);
+          } else {
+            console.debug('Bread not found:', clean);
+          }
+          if (toastedMatch) {
+            this.selected.toasted = true;
+            console.debug('Setting toasted = true');
+          }
           break;
         case 'cheese':
+          console.debug('Looking for cheeses:', items, 'in options:', this.cheeses?.map(c => c.label));
           for (const it of items) {
-            const opt = this.cheeses.find(c => c.label.toLowerCase() === it.toLowerCase()); if (opt) this.selected.cheeseIds.push(opt.id);
+            const opt = this.cheeses?.find(c => c.label.toLowerCase() === it.toLowerCase()); 
+            if (opt) {
+              this.selected.cheeseIds.push(opt.id);
+              console.debug('Found cheese:', opt.label, 'id:', opt.id);
+            } else {
+              console.debug('Cheese not found:', it);
+            }
           }
           break;
         case 'dressing':
@@ -147,10 +169,27 @@ export class BuilderForm {
           break;
         case 'toppings':
         case 'topping':
-          for (const it of items) { const opt = this.toppings.find(t => t.label.toLowerCase() === it.toLowerCase()); if (opt) this.selected.toppingIds.push(opt.id); }
+          for (const it of items) { 
+            const opt = this.toppings?.find(t => t.label.toLowerCase() === it.toLowerCase()); 
+            if (opt) {
+              this.selected.toppingIds.push(opt.id);
+              console.debug('Found topping:', opt.label, 'id:', opt.id);
+            } else {
+              console.debug('Topping not found:', it);
+            }
+          }
           break;
       }
     }
+    
+    console.debug('Final selections after parsing:', {
+      breadId: this.selected.breadId,
+      cheeseIds: this.selected.cheeseIds,
+      dressingIds: this.selected.dressingIds,
+      meatIds: this.selected.meatIds,
+      toppingIds: this.selected.toppingIds,
+      toasted: this.selected.toasted
+    });
   }
 
   get isEditMode() { return !!this.editingId; }
@@ -201,6 +240,17 @@ export class BuilderForm {
       queueMicrotask(() => {
         this.loading = false;
         console.debug('BuilderForm: all done, set loading=false (microtask)');
+        
+        // Now that all options are loaded, populate selections from description if editing
+        if (this.editingId && this.editingDescription) {
+          console.debug('BuilderForm: populating selections from description for editing');
+          console.debug('BuilderForm: editingDescription:', this.editingDescription);
+          console.debug('BuilderForm: available options - breads:', this.breads?.length, 'cheeses:', this.cheeses?.length, 'dressings:', this.dressings?.length, 'meats:', this.meats?.length, 'toppings:', this.toppings?.length);
+          this.populateSelectionsFromDescription(this.editingDescription);
+        } else {
+          console.debug('BuilderForm: not populating selections - editingId:', this.editingId, 'editingDescription:', this.editingDescription);
+        }
+        
         try { this.cd.detectChanges(); } catch { }
       });
     }
@@ -224,13 +274,44 @@ export class BuilderForm {
       if (!Number.isNaN(id)) {
         this.editingId = id;
         this.sandwiches.get(id).subscribe({ next: s => {
+          console.debug('BuilderForm: loaded sandwich for editing:', s);
+          console.debug('BuilderForm: API response name:', s.name, 'price:', s.price);
           // Prefill only name and price/description for now.
           this.selected.name = s.name ?? null;
-          this.selected.price = s.price ?? null;
-          // prefer explicit toasted flag from server when editing
-          this.selected.toasted = !!s.toasted;
-          // keep the full description for a read-only review view
-          this.editingDescription = s.description ?? null;
+            this.selected.price = s.price ?? null;
+            console.debug('BuilderForm: set selected.name to:', this.selected.name, 'selected.price to:', this.selected.price);
+            // prefer explicit toasted flag from server when editing
+            this.selected.toasted = !!s.toasted;
+            // keep the full description for a read-only review view
+            this.editingDescription = s.description ?? null;
+
+            console.debug('BuilderForm: editingDescription set to:', this.editingDescription);
+            console.debug('BuilderForm: loading status:', this.loading);
+
+            // If the server returned structured composition fields, use them
+            // (we added these server-side). Otherwise fall back to description parsing.
+            if ((s as any).breadId !== undefined || (s as any).cheeseIds !== undefined || (s as any).dressingIds !== undefined || (s as any).meatIds !== undefined || (s as any).toppingIds !== undefined) {
+              console.debug('BuilderForm: server provided composition fields, applying to selected');
+              try {
+                const srv: any = s as any;
+                this.selected.breadId = srv.breadId ?? null;
+                this.selected.cheeseIds = Array.isArray(srv.cheeseIds) ? (srv.cheeseIds as number[]).slice() : [];
+                this.selected.dressingIds = Array.isArray(srv.dressingIds) ? (srv.dressingIds as number[]).slice() : [];
+                this.selected.meatIds = Array.isArray(srv.meatIds) ? (srv.meatIds as number[]).slice() : [];
+                this.selected.toppingIds = Array.isArray(srv.toppingIds) ? (srv.toppingIds as number[]).slice() : [];
+                // If server omitted toasted in composition, keep the earlier toasted flag
+                if (srv.toasted !== undefined) this.selected.toasted = !!srv.toasted;
+              } catch (e) {
+                console.debug('BuilderForm: error applying server composition fields', e);
+              }
+            }
+
+            // If options are already loaded, populate selections from description only if structured values missing
+            if (!this.loading && this.editingDescription && (this.selected.breadId == null && this.selected.cheeseIds.length === 0 && this.selected.dressingIds.length === 0 && this.selected.meatIds.length === 0 && this.selected.toppingIds.length === 0)) {
+              console.debug('BuilderForm: options already loaded, no structured composition present, populating from description');
+              this.populateSelectionsFromDescription(this.editingDescription);
+            }
+          
           // scroll/focus to form to make it apparent
           try { this.cd.detectChanges(); } catch {}
         }, error: () => { /* ignore, user can still build */ } });
@@ -492,8 +573,15 @@ export class BuilderForm {
         name: this.selected.name,
         description: null as string | null,
         toasted: this.selected.toasted,
-        price: this.selected.price
+        price: this.selected.price,
+        // Include composition fields for proper update
+        breadId: this.selected.breadId,
+        cheeseIds: this.selected.cheeseIds && this.selected.cheeseIds.length > 0 ? this.selected.cheeseIds : null,
+        dressingIds: this.selected.dressingIds && this.selected.dressingIds.length > 0 ? this.selected.dressingIds : null,
+        meatIds: this.selected.meatIds && this.selected.meatIds.length > 0 ? this.selected.meatIds : null,
+        toppingIds: this.selected.toppingIds && this.selected.toppingIds.length > 0 ? this.selected.toppingIds : null
       };
+      console.debug('BuilderForm: updating sandwich with payload:', payload);
       // use HttpClient wrapper
       this.sandwiches.update(id, payload).subscribe({
         next: () => {

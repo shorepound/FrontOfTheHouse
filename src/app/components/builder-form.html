@@ -19,15 +19,118 @@
          of the stepper so users can quickly update name/price without
          stepping through every category. -->
   <div *ngIf="isEditMode">
-      <div class="review">
-        <h3>Review sandwich</h3>
-        <div class="field"><strong>Name:</strong> {{ selected.name || '(no name)' }}</div>
-        <div class="field"><strong>Price:</strong> {{ selected.price != null ? ('$' + (selected.price | number:'1.2-2')) : '(no price)' }}</div>
-        <div class="field"><strong>Description:</strong></div>
-        <div class="description">{{ editingDescription || '(no description available)' }}</div>
-        <div class="action-row review-actions">
-          <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="submitting">{{ submitting ? 'Saving…' : 'Save' }}</button>
-          <button type="button" class="btn btn-outline-secondary" (click)="startEditComposition()">Edit composition</button>
+      <div class="inline-editor">
+        <h3>Edit Sandwich</h3>
+        
+        <!-- Basic Info Section -->
+        <div class="edit-section">
+          <h4>Basic Information</h4>
+          <div class="edit-grid">
+            <div class="field">
+              <label for="edit-name">Name:</label>
+              <input id="edit-name" type="text" [(ngModel)]="selected.name" name="editName" class="form-control" placeholder="Enter sandwich name">
+            </div>
+            <div class="field">
+              <label for="edit-price">Price:</label>
+              <input id="edit-price" type="number" [(ngModel)]="selected.price" name="editPrice" class="form-control" step="0.01" min="0" placeholder="0.00">
+            </div>
+          </div>
+          <div class="field">
+            <label>
+              <input type="checkbox" [(ngModel)]="selected.toasted" name="editToasted"> Toasted
+            </label>
+          </div>
+        </div>
+
+        <!-- Composition Section -->
+        <div class="edit-section">
+          <h4>Composition</h4>
+          
+          <!-- Bread Selection -->
+          <div class="field">
+            <label for="edit-bread">Bread:</label>
+            <select id="edit-bread" [(ngModel)]="selected.breadId" name="editBread" class="form-control">
+              <option [ngValue]="null">Choose bread...</option>
+              <option *ngFor="let bread of breads" [ngValue]="bread.id">{{ bread.label }}</option>
+            </select>
+          </div>
+
+          <!-- Cheese Selection -->
+          <div class="field">
+            <label>Cheese:</label>
+            <div class="checkbox-list" *ngIf="cheeses.length > 0">
+              <div class="checkbox-item" *ngFor="let cheese of cheeses">
+                <label>
+                  <input type="checkbox" [checked]="selected.cheeseIds.includes(cheese.id)" (change)="toggleCheese(cheese.id, $event.target.checked)">
+                  {{ cheese.label }}
+                </label>
+              </div>
+            </div>
+            <label class="no-option">
+              <input type="checkbox" [(ngModel)]="selected.noCheese" name="editNoCheese" (change)="toggleNoCheese($event.target.checked)"> No cheese
+            </label>
+          </div>
+
+          <!-- Dressing Selection -->
+          <div class="field">
+            <label>Dressing:</label>
+            <div class="checkbox-list" *ngIf="dressings.length > 0">
+              <div class="checkbox-item" *ngFor="let dressing of dressings">
+                <label>
+                  <input type="checkbox" [checked]="selected.dressingIds.includes(dressing.id)" (change)="toggleDressing(dressing.id, $event.target.checked)">
+                  {{ dressing.label }}
+                </label>
+              </div>
+            </div>
+            <label class="no-option">
+              <input type="checkbox" [(ngModel)]="selected.noDressing" name="editNoDressing" (change)="toggleNoDressing($event.target.checked)"> No dressing
+            </label>
+          </div>
+
+          <!-- Meat Selection -->
+          <div class="field">
+            <label>Meat:</label>
+            <div class="checkbox-list" *ngIf="meats.length > 0">
+              <div class="checkbox-item" *ngFor="let meat of meats">
+                <label>
+                  <input type="checkbox" [checked]="selected.meatIds.includes(meat.id)" (change)="toggleMeat(meat.id, $event.target.checked)">
+                  {{ meat.label }}
+                </label>
+              </div>
+            </div>
+            <label class="no-option">
+              <input type="checkbox" [(ngModel)]="selected.noMeat" name="editNoMeat" (change)="toggleNoMeat($event.target.checked)"> No meat
+            </label>
+          </div>
+
+          <!-- Toppings Selection -->
+          <div class="field">
+            <label>Toppings:</label>
+            <div class="checkbox-list" *ngIf="toppings.length > 0">
+              <div class="checkbox-item" *ngFor="let topping of toppings">
+                <label>
+                  <input type="checkbox" [checked]="selected.toppingIds.includes(topping.id)" (change)="toggleTopping(topping.id, $event.target.checked)">
+                  {{ topping.label }}
+                </label>
+              </div>
+            </div>
+            <label class="no-option">
+              <input type="checkbox" [(ngModel)]="selected.noToppings" name="editNoToppings" (change)="toggleNoToppings($event.target.checked)"> No toppings
+            </label>
+          </div>
+        </div>
+
+        <!-- Current Description (Read-only) -->
+        <div class="edit-section">
+          <h4>Current Description</h4>
+          <div class="description-preview">{{ editingDescription || '(no description)' }}</div>
+          <small class="help-text">This will be updated automatically when you save your changes.</small>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-row edit-actions">
+          <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="submitting">{{ submitting ? 'Saving…' : 'Save Changes' }}</button>
+          <button type="button" class="btn btn-outline-secondary" (click)="cancelEdit()">Cancel</button>
           <a routerLink="/sandwiches" class="link-to-list">Back to list</a>
         </div>
       </div>
