@@ -1,153 +1,482 @@
-/* Styles for builder form component */
-select { display: block; margin-bottom: 20px; }
-button[type="submit"] { border-radius: 6px; }
-.link-to-list { margin-left: 12px; }
+/* Enhanced Styles for builder form component */
+
+/* Modern select styling */
+select { 
+    display: block; 
+    margin-bottom: 20px;
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    background-color: #fff;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+select:focus {
+    outline: none;
+    border-color: #06629f;
+    box-shadow: 0 0 0 3px rgba(6,98,159,0.1), 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Enhanced button styles */
+button[type="submit"] { 
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.link-to-list { 
+    margin-left: 12px;
+    color: #06629f;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.link-to-list:hover {
+    background: rgba(6,98,159,0.1);
+    text-decoration: none;
+}
 
 /* Review action row spacing */
-.review-actions { margin-top: 12px; display: flex; gap: 8px; align-items: center; flex-wrap:wrap; }
+.review-actions { 
+    margin-top: 20px; 
+    display: flex; 
+    gap: 12px; 
+    align-items: center; 
+    flex-wrap: wrap;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
 
-/* Inline editor styles */
+/* Enhanced Inline editor styles */
+/* Enhanced inline editor styling */
 .inline-editor {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 32px;
+  margin: 24px 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.inline-editor h3 {
+  margin: 0 0 24px 0;
+  color: #06629f;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+  position: relative;
+  padding-bottom: 16px;
+}
+
+.inline-editor h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #06629f 0%, #084c76 100%);
+  border-radius: 2px;
 }
 
 .edit-section {
-  margin-bottom: 30px;
-  padding: 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  background: #fafafa;
+  margin-bottom: 32px;
+  padding: 32px;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: all 0.2s ease;
+}
+
+.edit-section:hover {
+  border-color: rgba(6,98,159,0.2);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
 }
 
 .edit-section h4 {
-  margin: 0 0 15px 0;
-  color: #333;
-  font-size: 1.1rem;
+  margin: 0 0 20px 0;
+  color: #06629f;
+  font-size: 1.3rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.edit-section h4::before {
+  content: '';
+  width: 6px;
+  height: 24px;
+  background: linear-gradient(135deg, #06629f 0%, #084c76 100%);
+  border-radius: 3px;
 }
 
 .edit-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin-bottom: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .field {
-  margin-bottom: 15px;
+  margin-bottom: 24px;
 }
 
 .field label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-  color: #555;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95rem;
 }
 
 .field input[type="text"],
 .field input[type="number"],
 .field select {
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 16px 20px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: white;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
 }
 
 .field input[type="text"]:focus,
 .field input[type="number"]:focus,
 .field select:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+  border-color: #06629f;
+  box-shadow: 0 0 0 3px rgba(6,98,159,0.1), 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .checkbox-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px;
-  margin-bottom: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+}
+
+.checkbox-item {
+  background: white;
+  padding: 16px;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.checkbox-item:hover {
+  border-color: #06629f;
+  box-shadow: 0 2px 8px rgba(6,98,159,0.1);
 }
 
 .checkbox-item label {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin-bottom: 0;
-  font-weight: normal;
+  font-weight: 400;
   cursor: pointer;
+  color: #2c3e50;
 }
 
 .checkbox-item input[type="checkbox"] {
   margin: 0;
+  width: 18px;
+  height: 18px;
+  accent-color: #06629f;
 }
 
 .no-option {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
   font-style: italic;
-  color: #666;
+  color: #856404;
+  font-weight: 500;
 }
 
 .no-option input[type="checkbox"] {
   margin: 0;
+  width: 18px;
+  height: 18px;
 }
 
 .description-preview {
-  padding: 10px;
+  padding: 16px;
   background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 4px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
   color: #495057;
   font-style: italic;
-  min-height: 40px;
+  min-height: 60px;
+  line-height: 1.5;
 }
 
 .help-text {
   color: #6c757d;
   font-size: 0.875rem;
-  margin-top: 5px;
+  margin-top: 8px;
+  font-style: italic;
 }
 
 .edit-actions {
-  margin-top: 30px;
+  margin-top: 32px;
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
   flex-wrap: wrap;
-  padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
+  padding: 24px 0 0 0;
+  border-top: 2px solid #e9ecef;
+  justify-content: center;
 }
 
-/* Inline checkbox spacing next to select */
-.inline-checkbox { margin-left: 12px; }
+.edit-actions .btn {
+  min-width: 140px;
+  padding: 12px 24px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
 
-/* Step controls spacing */
-.step-controls { margin-top: 12px; display: flex; gap: 8px; align-items: center; }
+/* Enhanced form field styles */
+.inline-checkbox { 
+    margin-left: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s ease;
+}
 
-/* Make action fields responsive: wrap on small screens and keep inputs usable */
-.actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-.actions .field { margin: 0; flex: 1 1 200px; min-width: 180px; }
+.inline-checkbox:hover {
+    background: #e9ecef;
+}
 
-/* required asterisk */
-.actions .field label span { color: #b00; }
+.inline-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #06629f;
+}
 
-/* Stepper body spacing improvements */
-.stepper { padding: 8px 0; }
-.step-body { padding: 6px 0; }
+.inline-checkbox label {
+    margin: 0;
+    font-weight: 500;
+    color: #2c3e50;
+    cursor: pointer;
+}
 
-/* Improve small-screen layout for description chips so they wrap nicely */
-.desc-block { gap: 8px; }
-.desc-group { align-items:flex-start; }
-.group-items { gap: 6px; }
+/* Enhanced step controls */
+.step-controls { 
+    margin-top: 24px; 
+    display: flex; 
+    gap: 12px; 
+    align-items: center;
+    justify-content: space-between;
+}
 
+/* Enhanced action fields */
+.actions { 
+    display: flex; 
+    gap: 16px; 
+    align-items: center; 
+    flex-wrap: wrap;
+    padding: 24px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+}
+
+.actions .field { 
+    margin: 0; 
+    flex: 1 1 250px; 
+    min-width: 200px;
+}
+
+.actions .field label {
+    font-weight: 600;
+    color: #06629f;
+}
+
+.actions .field input {
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.actions .field input:focus {
+    border-color: #06629f;
+    box-shadow: 0 0 0 3px rgba(6,98,159,0.1);
+}
+
+/* Required asterisk styling */
+.actions .field label .required { 
+    color: #dc3545;
+    font-weight: 700;
+}
+
+/* Final step special styling */
+.final-step {
+    padding: 28px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+}
+
+.final-step .field {
+    margin-bottom: 20px;
+}
+
+.final-step .field label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #06629f;
+    margin-bottom: 10px;
+}
+
+.final-step input {
+    padding: 14px 18px;
+    font-size: 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.final-step input:focus {
+    border-color: #06629f;
+    box-shadow: 0 0 0 3px rgba(6,98,159,0.1), 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Enhanced toast notifications */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    animation: slideInRight 0.3s ease-out;
+}
+
+.toast-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-left: 4px solid #155724;
+}
+
+.toast-error {
+    background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
+    border-left: 4px solid #721c24;
+}
+
+.toast button {
+    background: none;
+    border: none;
+    color: white;
+    margin-left: 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.toast button:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Loading state improvements */
+.builder-form.dimmed {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading-overlay {
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.95) 100%);
+    border: 2px dashed #06629f;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    color: #06629f;
+    text-align: center;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    backdrop-filter: blur(4px);
+}
+
+/* Stepper body improvements */
+.stepper { 
+    padding: 16px 0;
+    margin: 24px 0;
+}
+
+.step-body { 
+    padding: 12px 0;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Improve small-screen layout */
+.desc-block { 
+    gap: 12px;
+}
+
+.desc-group { 
+    align-items: flex-start;
+}
+
+.group-items { 
+    gap: 8px;
+}
+
+/* Enhanced responsive design */
 @media (max-width: 768px) {
   .edit-grid {
     grid-template-columns: 1fr;
@@ -155,21 +484,178 @@ button[type="submit"] { border-radius: 6px; }
   
   .checkbox-list {
     grid-template-columns: 1fr;
+    max-height: 250px;
   }
   
   .edit-actions {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
   }
   
   .edit-actions > * {
     width: 100%;
     text-align: center;
   }
+
+  .inline-editor {
+    padding: 20px 16px;
+    margin: 16px;
+  }
+
+  .edit-section {
+    padding: 16px;
+  }
+
+  .stepper {
+    padding: 16px;
+    margin: 16px 0;
+  }
+
+  .step-controls {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .step-controls .btn {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .selection-summary {
+    margin: 12px 0;
+  }
+
+  .toast {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
 }
 
 @media (max-width: 560px) {
-	.actions .field { flex: 1 1 100%; min-width: auto; }
-	.review-actions { width: 100%; }
-	.step-controls { width: 100%; justify-content: space-between; }
+  .actions .field { 
+    flex: 1 1 100%; 
+    min-width: auto;
+  }
+  
+  .review-actions { 
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .step-controls { 
+    width: 100%; 
+    justify-content: space-between;
+  }
+
+  .checkbox-list {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .checkbox-item {
+    padding: 8px;
+  }
+
+  .actions {
+    padding: 16px;
+  }
+
+  .final-step {
+    padding: 16px;
+  }
+}
+
+/* Enhanced focus states for accessibility */
+.field input:focus,
+.field select:focus,
+.checkbox-item input:focus {
+  outline: 2px solid #06629f;
+  outline-offset: 2px;
+}
+
+/* Enhanced error states */
+.field.invalid input,
+.field.invalid select {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220,53,69,0.1);
+}
+
+.field .error {
+  color: #dc3545;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+}
+
+.field .error button {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  border: 1px solid #dc3545;
+  background: white;
+  color: #dc3545;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.field .error button:hover {
+  background: #dc3545;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Smooth transitions for better UX */
+.field,
+.checkbox-item,
+.edit-section,
+.stepper,
+.selection-summary {
+  transition: all 0.2s ease;
+}
+
+/* Enhanced disabled states */
+.btn[disabled],
+.field input[disabled],
+.field select[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(50%);
+}
+
+/* Progressive enhancement for modern browsers */
+@supports (backdrop-filter: blur(4px)) {
+  .loading-overlay {
+    backdrop-filter: blur(4px);
+  }
+}
+
+/* Custom scrollbar for checkbox lists */
+.checkbox-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.checkbox-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.checkbox-list::-webkit-scrollbar-thumb {
+  background: #06629f;
+  border-radius: 4px;
+}
+
+.checkbox-list::-webkit-scrollbar-thumb:hover {
+  background: #084c76;
 }
