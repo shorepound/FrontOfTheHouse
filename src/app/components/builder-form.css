@@ -1,23 +1,34 @@
-/* Enhanced Styles for builder form component */
+/* Builder form component styles - essential only */
 
-/* Modern select styling */
-select { 
-    display: block; 
-    margin-bottom: 20px;
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    background-color: #fff;
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+.inline-editor h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #06629f 0%, #084c76 100%);
+  border-radius: 2px;
 }
 
-select:focus {
-    outline: none;
-    border-color: #06629f;
-    box-shadow: 0 0 0 3px rgba(6,98,159,0.1), 0 2px 8px rgba(0,0,0,0.08);
+.edit-section h4::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, #06629f 0%, #084c76 100%);
+  border-radius: 2px;
+}
+
+.step-body { 
+    padding: 12px 0;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 /* Enhanced button styles */
@@ -56,8 +67,7 @@ button[type="submit"] {
     border: 1px solid #e9ecef;
 }
 
-/* Enhanced Inline editor styles */
-/* Enhanced inline editor styling */
+/* Inline editor styling */
 .inline-editor {
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   border: 2px solid #e9ecef;
@@ -141,27 +151,6 @@ button[type="submit"] {
   font-weight: 600;
   color: #2c3e50;
   font-size: 0.95rem;
-}
-
-.field input[type="text"],
-.field input[type="number"],
-.field select {
-  width: 100%;
-  padding: 16px 20px;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  background: white;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-}
-
-.field input[type="text"]:focus,
-.field input[type="number"]:focus,
-.field select:focus {
-  outline: none;
-  border-color: #06629f;
-  box-shadow: 0 0 0 3px rgba(6,98,159,0.1), 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .checkbox-list {
@@ -375,287 +364,4 @@ button[type="submit"] {
 .final-step input:focus {
     border-color: #06629f;
     box-shadow: 0 0 0 3px rgba(6,98,159,0.1), 0 2px 8px rgba(0,0,0,0.08);
-}
-
-/* Enhanced toast notifications */
-.toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 16px 20px;
-    border-radius: 8px;
-    color: white;
-    font-weight: 500;
-    z-index: 1000;
-    max-width: 400px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    animation: slideInRight 0.3s ease-out;
-}
-
-.toast-success {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    border-left: 4px solid #155724;
-}
-
-.toast-error {
-    background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
-    border-left: 4px solid #721c24;
-}
-
-.toast button {
-    background: none;
-    border: none;
-    color: white;
-    margin-left: 12px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background 0.2s ease;
-}
-
-.toast button:hover {
-    background: rgba(255,255,255,0.2);
-}
-
-@keyframes slideInRight {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-/* Loading state improvements */
-.builder-form.dimmed {
-    opacity: 0.6;
-    pointer-events: none;
-    position: relative;
-}
-
-.loading-overlay {
-    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.95) 100%);
-    border: 2px dashed #06629f;
-    padding: 20px 24px;
-    margin-bottom: 16px;
-    color: #06629f;
-    text-align: center;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 1.1rem;
-    backdrop-filter: blur(4px);
-}
-
-/* Stepper body improvements */
-.stepper { 
-    padding: 16px 0;
-    margin: 24px 0;
-}
-
-.step-body { 
-    padding: 12px 0;
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-/* Improve small-screen layout */
-.desc-block { 
-    gap: 12px;
-}
-
-.desc-group { 
-    align-items: flex-start;
-}
-
-.group-items { 
-    gap: 8px;
-}
-
-/* Enhanced responsive design */
-@media (max-width: 768px) {
-  .edit-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .checkbox-list {
-    grid-template-columns: 1fr;
-    max-height: 250px;
-  }
-  
-  .edit-actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-  
-  .edit-actions > * {
-    width: 100%;
-    text-align: center;
-  }
-
-  .inline-editor {
-    padding: 20px 16px;
-    margin: 16px;
-  }
-
-  .edit-section {
-    padding: 16px;
-  }
-
-  .stepper {
-    padding: 16px;
-    margin: 16px 0;
-  }
-
-  .step-controls {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .step-controls .btn {
-    width: 100%;
-    min-width: auto;
-  }
-
-  .selection-summary {
-    margin: 12px 0;
-  }
-
-  .toast {
-    top: 10px;
-    right: 10px;
-    left: 10px;
-    max-width: none;
-  }
-}
-
-@media (max-width: 560px) {
-  .actions .field { 
-    flex: 1 1 100%; 
-    min-width: auto;
-  }
-  
-  .review-actions { 
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .step-controls { 
-    width: 100%; 
-    justify-content: space-between;
-  }
-
-  .checkbox-list {
-    padding: 12px;
-    gap: 8px;
-  }
-
-  .checkbox-item {
-    padding: 8px;
-  }
-
-  .actions {
-    padding: 16px;
-  }
-
-  .final-step {
-    padding: 16px;
-  }
-}
-
-/* Enhanced focus states for accessibility */
-.field input:focus,
-.field select:focus,
-.checkbox-item input:focus {
-  outline: 2px solid #06629f;
-  outline-offset: 2px;
-}
-
-/* Enhanced error states */
-.field.invalid input,
-.field.invalid select {
-  border-color: #dc3545;
-  box-shadow: 0 0 0 3px rgba(220,53,69,0.1);
-}
-
-.field .error {
-  color: #dc3545;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-top: 6px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 6px;
-}
-
-.field .error button {
-  padding: 4px 8px;
-  font-size: 0.8rem;
-  border-radius: 4px;
-  border: 1px solid #dc3545;
-  background: white;
-  color: #dc3545;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 500;
-}
-
-.field .error button:hover {
-  background: #dc3545;
-  color: white;
-  transform: translateY(-1px);
-}
-
-/* Smooth transitions for better UX */
-.field,
-.checkbox-item,
-.edit-section,
-.stepper,
-.selection-summary {
-  transition: all 0.2s ease;
-}
-
-/* Enhanced disabled states */
-.btn[disabled],
-.field input[disabled],
-.field select[disabled] {
-  opacity: 0.5;
-  cursor: not-allowed;
-  filter: grayscale(50%);
-}
-
-/* Progressive enhancement for modern browsers */
-@supports (backdrop-filter: blur(4px)) {
-  .loading-overlay {
-    backdrop-filter: blur(4px);
-  }
-}
-
-/* Custom scrollbar for checkbox lists */
-.checkbox-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.checkbox-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.checkbox-list::-webkit-scrollbar-thumb {
-  background: #06629f;
-  border-radius: 4px;
-}
-
-.checkbox-list::-webkit-scrollbar-thumb:hover {
-  background: #084c76;
 }
