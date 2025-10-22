@@ -9,7 +9,7 @@ import { SandwichService, Sandwich } from '../services/sandwich.service';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './sandwich-list.html',
-  styleUrls: ['./sandwich-list.css']
+  // styles moved to global styles.css to reduce component bundle size
 })
 export class SandwichList {
   sandwiches: Sandwich[] = [];

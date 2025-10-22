@@ -14,7 +14,7 @@ import { timeout } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './builder-form.html',
-  styleUrls: ['./builder-form.css']
+  // styles moved to global styles.css to reduce component bundle size
 })
 export class BuilderForm {
   breads: Option[] = [];
