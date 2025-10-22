@@ -270,7 +270,6 @@ nav a { margin-bottom: 12px; display: inline-block; }
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #06629f 0%, #084c76 100%);
     border-radius: 12px 12px 0 0;
 }
 
@@ -286,21 +285,6 @@ nav a { margin-bottom: 12px; display: inline-block; }
     display: flex;
     align-items: center;
     gap: 12px;
-}
-
-.step-header .step-name::before {
-    content: '';
-    width: 32px;
-    height: 32px;
-    background: linear-gradient(135deg, #06629f 0%, #084c76 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 0.9rem;
-    content: counter(step);
 }
 
 .step-body { 
