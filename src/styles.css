@@ -15,6 +15,14 @@ body {
     /*color: #fff;*/
 }
 
+app-root {
+  margin: 40px; /* Applies a 20px margin to all sides */
+}
+
+table.sandwich-table{
+  border-radius: 8px;
+}
+
 
 .form-group {
     margin-bottom: 15px;
@@ -310,7 +318,7 @@ main h1 { font-family: 'Courier New', Courier, monospace; color:#b7f2c9; font-we
 section h2 {color: #fff;}
 
 table tr:nth-child(even) {
-background-color: rgb(13 110 253 / 0%); 
+background-color: azure; 
 }
 
 table tr:nth-child(odd) {

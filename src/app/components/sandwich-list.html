@@ -1,8 +1,5 @@
 <section>
   <h2>Sandwiches</h2>
-  <nav>
-    <a routerLink="/builder">Build a sandwich</a>
-  </nav>
   <div *ngIf="loading">Loading...</div>
   <table *ngIf="!loading" class="sandwich-table">
     <thead>
