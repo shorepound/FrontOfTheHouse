@@ -1,6 +1,6 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
@@ -25,6 +25,11 @@ import { AuthService } from '../services/auth.service';
       <div *ngIf="error" class="alert alert-danger" aria-live="polite">{{ error }}</div>
       <div *ngIf="success" class="alert alert-success" aria-live="polite">{{ success }}</div>
 
+      <!-- lightweight toast (transient) -->
+      <div *ngIf="toast" style="position:fixed; right:1rem; top:1rem; z-index:1050;">
+        <div style="background:#0d6efd;color:white;padding:0.6rem 0.9rem;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.15);">{{ toast }}</div>
+      </div>
+
       <div class="form-actions">
         <button class="btn btn-primary" [disabled]="submitting || f.invalid">{{ submitting ? 'Sending…' : 'Send reset instructions' }}</button>
       </div>
@@ -39,6 +44,8 @@ export class ForgotPassword {
   submitting = false;
   error: string | null = null;
   success: string | null = null;
+  toast: string | null = null;
+  @ViewChild('f') form?: NgForm;
 
   constructor(private auth: AuthService, private router: Router, private cdr: ChangeDetectorRef) {}
 
@@ -67,12 +74,23 @@ export class ForgotPassword {
       }
 
       this.success = 'If an account exists for that email, reset instructions have been sent.';
-      // Ensure UI updates immediately and provide a small auto-redirect so users see confirmation.
+      // Ensure UI updates immediately and show a transient toast so users see confirmation.
       try { this.cdr.detectChanges(); } catch {}
+      this.toast = 'Reset instructions were requested — check your email.';
       setTimeout(() => {
-        // Navigate back to login after showing the message briefly
-        try { this.router.navigate(['/login']); } catch (e) { console.debug('[forgot] auto-navigate failed', e); }
-      }, 2500);
+        // hide toast then refresh the form to give the user a clean slate
+        this.toast = null;
+        try { this.cdr.detectChanges(); } catch {}
+
+        // clear model and alerts
+        this.email = '';
+        this.error = null;
+        this.success = null;
+
+        // reset Angular form state (pristine/untouched)
+        try { this.form?.resetForm(); } catch {}
+        try { this.cdr.detectChanges(); } catch {}
+      }, 3000);
     } catch (e) {
       this.error = (e as any)?.message ?? String(e);
     } finally {
