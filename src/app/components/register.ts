@@ -43,7 +43,7 @@ import { AuthService } from '../services/auth.service';
           This email is already registered. <a routerLink="/login">Log in</a>
         </div>
         <div *ngIf="showLoginSuggestion" class="alert alert-info">
-          This email appears to be already registered. <a routerLink="/login">Log in</a> or <a routerLink="/login">reset your password</a> if you've forgotten it.
+          This email appears to be already registered. <a routerLink="/login">Log in</a> or <a routerLink="/forgot-password">reset your password</a> if you've forgotten it.
         </div>
         <button class="btn btn-primary" [disabled]="submitting || f.invalid">{{ submitting ? 'Registering…' : 'Register' }}</button>
       </form>

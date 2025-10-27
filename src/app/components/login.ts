@@ -61,7 +61,8 @@ import { AuthService } from '../services/auth.service';
         <button class="btn btn-primary" [disabled]="submitting || f.invalid">{{ submitting ? 'Logging in…' : 'Log in' }}</button>
       </div>
     </form>
-    <p *ngIf="showRegisterSuggestion" class="muted">Don't have an account? <a routerLink="/register">Create one</a></p>
+  <p *ngIf="showRegisterSuggestion" class="muted">Don't have an account? <a routerLink="/register">Create one</a></p>
+  <p class="muted small"><a routerLink="/forgot-password">Forgot password?</a></p>
 
     <div *ngIf="requiresMfa" class="mfa">
       <h3>MFA required</h3>

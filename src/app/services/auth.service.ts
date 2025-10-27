@@ -120,6 +120,20 @@ export class AuthService {
 		}
 	}
 
+	/** Request a password-reset email for the given address. Backend may return 404 if not implemented. */
+	async requestPasswordReset(email: string): Promise<ApiResult> {
+		try {
+			const res = await this.fetchWithTimeout('/api/auth/forgot', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+				body: JSON.stringify({ email })
+			}, 5000);
+			return await this.parseResponse(res);
+		} catch (t) {
+			return { ok: false, status: 0, body: { error: (t as any)?.message ?? String(t) }, bodyText: String(t) };
+		}
+	}
+
 	setToken(token: string) { localStorage.setItem('auth_token', token); }
 	getToken(): string | null { return localStorage.getItem('auth_token'); }
 	logout() { localStorage.removeItem('auth_token'); }
