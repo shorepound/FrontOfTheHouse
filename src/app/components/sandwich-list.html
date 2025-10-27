@@ -17,7 +17,8 @@
     <a routerLink="/builder" class="btn btn-primary">Create sandwich</a>
   </div>
 
-  <table *ngIf="!loading && sandwiches.length > 0" class="sandwich-table">
+  <div *ngIf="!loading && sandwiches.length > 0" class="table-wrapper">
+    <table class="sandwich-table">
     <thead>
       <tr>
         <th>Name</th>
@@ -70,5 +71,6 @@
         </td>
       </tr>
     </tbody>
-  </table>
+    </table>
+  </div>
 </section>
