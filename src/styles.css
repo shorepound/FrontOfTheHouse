@@ -52,7 +52,7 @@ app-root, .app-container {
   -webkit-backdrop-filter: blur(6px);
 }
 .topnav .brand { font-weight: 800; font-size: 1rem; }
-.topnav .brand-link { color: var(--primary); text-decoration: none; font-weight: 800; letter-spacing: 0.6px; }
+.topnav .brand-link { color: var(--primary); text-decoration: none; font-weight: 800; letter-spacing: 0.6px; background: none;}
 .topnav .nav-links { display: flex; gap: 12px; align-items: center; margin-left: 8px; }
 .topnav a { color: #2c3e50; padding: 8px 12px; border-radius: 8px; text-decoration: none; font-weight: 600; }
 .topnav a.active { background: linear-gradient(90deg, rgba(6,98,159,0.1), rgba(6,98,159,0.06)); color: var(--primary); }
@@ -365,7 +365,7 @@ nav a { margin-bottom: 12px; display: inline-block; }
 }
 
 main h1 { font-family: 'Courier New', Courier, monospace; color:#b7f2c9; font-weight: bolder;}
-section h2 {color: #fff;}
+section h2 {color: #6c6969;}
 
 table tr:nth-child(even) {
 background-color: azure; 
