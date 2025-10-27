@@ -1058,3 +1058,33 @@ button[type="submit"] {
   cursor: not-allowed; 
   filter: grayscale(50%); 
 }
+
+/* Empty state for lists */
+.empty-state {
+  text-align: center;
+  padding: 28px;
+  background: linear-gradient(135deg, #ffffff 0%, #f7fbff 100%);
+  border: 1px dashed rgba(6,98,159,0.08);
+  border-radius: 10px;
+  margin: 12px 0 20px 0;
+}
+.empty-state p {
+  margin: 0 0 12px 0;
+  font-size: 1.05rem;
+  color: #2c3e50;
+}
+
+/* Skeleton loading rows for tables */
+.skeleton { margin-bottom: 12px; }
+.skeleton-row { display: grid; grid-template-columns: 2fr 4fr 1fr 1fr; gap: 12px; align-items: center; padding: 12px; }
+.skeleton-cell { height: 28px; border-radius: 6px; background: #f0f0f0; }
+.skeleton-cell.name { height: 20px; width: 60%; }
+.skeleton-cell.desc { height: 20px; width: 100%; }
+.skeleton-cell.price { height: 20px; width: 40px; }
+.skeleton-cell.actions { height: 28px; width: 48px; border-radius: 50px; }
+.skeleton-cell.loading { background: linear-gradient(90deg, #f3f3f3 25%, #e9eef6 50%, #f3f3f3 75%); background-size: 400% 100%; animation: shimmer 1.6s linear infinite; }
+
+@media (max-width: 720px) {
+  .skeleton-row { grid-template-columns: 1fr; gap: 8px; }
+  .skeleton-cell.actions { width: 80px; }
+}

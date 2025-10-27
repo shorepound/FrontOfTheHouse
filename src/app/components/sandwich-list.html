@@ -1,7 +1,23 @@
 <section>
   <h2>Sandwiches</h2>
-  <div *ngIf="loading">Loading...</div>
-  <table *ngIf="!loading" class="sandwich-table">
+
+  <!-- Loading skeleton while data is fetched -->
+  <div *ngIf="loading" class="skeleton">
+    <div class="skeleton-row" *ngFor="let _ of [0,1,2]">
+      <div class="skeleton-cell name loading"></div>
+      <div class="skeleton-cell desc loading"></div>
+      <div class="skeleton-cell price loading"></div>
+      <div class="skeleton-cell actions loading"></div>
+    </div>
+  </div>
+
+  <!-- Friendly empty state when there are no sandwiches -->
+  <div *ngIf="!loading && sandwiches.length === 0" class="empty-state">
+    <p>No sandwiches yet — create one to get started.</p>
+    <a routerLink="/builder" class="btn btn-primary">Create sandwich</a>
+  </div>
+
+  <table *ngIf="!loading && sandwiches.length > 0" class="sandwich-table">
     <thead>
       <tr>
         <th>Name</th>
