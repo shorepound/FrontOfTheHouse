@@ -1,4 +1,4 @@
-import { Component, Inject, ChangeDetectorRef } from '@angular/core';
+import { Component, Inject, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +13,8 @@ import { timeout } from 'rxjs/operators';
   selector: 'builder-form',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './builder-form.html'
+  templateUrl: './builder-form.html',
+  // styles moved to global styles.css to reduce component bundle size
 })
 export class BuilderForm {
   breads: Option[] = [];
@@ -46,6 +47,9 @@ export class BuilderForm {
     ,
     // optional price in dollars
     price: null as number | null
+    ,
+    // whether the chosen bread should be toasted
+    toasted: false as boolean
   };
 
   // Temporary UI debug helper: set true to show alerts for success/error so
@@ -60,10 +64,135 @@ export class BuilderForm {
 
   loading = true;
 
+  // Stepper UI state: current step index (0-based)
+  steps = [ 'Bread', 'Cheese', 'Dressing', 'Meat', 'Toppings', 'Name & Price' ];
+  stepIndex = 0;
+
+  // Convenience getters
+  get currentStep() { return this.steps[this.stepIndex]; }
+  get isFirstStep() { return this.stepIndex === 0; }
+  get isLastStep() { return this.stepIndex === this.steps.length - 1; }
+
+  nextStep() {
+    if (!this.isLastStep) {
+      this.stepIndex += 1;
+      try { this.cd.detectChanges(); } catch {}
+    }
+  }
+
+  prevStep() {
+    if (!this.isFirstStep) {
+      this.stepIndex -= 1;
+      try { this.cd.detectChanges(); } catch {}
+    }
+  }
+
   constructor(private opts: OptionsService, private sandwiches: SandwichService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef, private route: ActivatedRoute, private router: Router) {}
 
   // When editing an existing sandwich this holds its id
   editingId: number | null = null;
+  // When editing, keep the server-provided description so we can show a
+  // compact review of the sandwich instead of forcing the user through the
+  // stepper flow.
+  editingDescription: string | null = null;
+
+  // When true the edit flow will open the stepper so the user can change composition
+  editingInPlace = false;
+
+  startEditComposition() {
+    // Open the stepper and attempt to populate selections if needed
+    this.editingInPlace = true;
+    // If the lists are loaded, populate selections immediately; otherwise
+    // populateSelectionsFromDescription will be called after lists load.
+    try { if (!this.loading && this.editingDescription) this.populateSelectionsFromDescription(this.editingDescription); } catch {}
+    try { this.cd.detectChanges(); } catch {}
+  }
+
+  cancelEdit() {
+    // Navigate back to the sandwich list
+    this.router.navigate(['/sandwiches']);
+  }
+
+  // Parse a server description string and try to match labels to option ids
+  populateSelectionsFromDescription(desc: string) {
+    // Reset selections
+    this.selected.breadId = null;
+    this.selected.cheeseIds = [];
+    this.selected.dressingIds = [];
+    this.selected.meatIds = [];
+    this.selected.toppingIds = [];
+    this.selected.toasted = false;
+
+    const parts = desc.split(';').map(p => p.trim()).filter(Boolean);
+    for (const part of parts) {
+      const idx = part.indexOf(':');
+      if (idx === -1) continue;
+      const label = part.substring(0, idx).trim().toLowerCase();
+      const items = part.substring(idx + 1).split(',').map(s => s.trim()).filter(Boolean);
+      switch (label) {
+        case 'bread':
+          // bread may contain '(toasted)'
+          const bname = items.join(', ');
+          const toastedMatch = /\(toasted\)$/i.test(bname);
+          const clean = bname.replace(/\(toasted\)$/i, '').trim();
+          console.debug('Looking for bread:', clean, 'in options:', this.breads?.map(b => b.label));
+          const breadOpt = this.breads?.find(b => b.label.toLowerCase() === clean.toLowerCase());
+          if (breadOpt) {
+            this.selected.breadId = breadOpt.id;
+            console.debug('Found bread:', breadOpt.label, 'id:', breadOpt.id);
+          } else {
+            console.debug('Bread not found:', clean);
+          }
+          if (toastedMatch) {
+            this.selected.toasted = true;
+            console.debug('Setting toasted = true');
+          }
+          break;
+        case 'cheese':
+          console.debug('Looking for cheeses:', items, 'in options:', this.cheeses?.map(c => c.label));
+          for (const it of items) {
+            const opt = this.cheeses?.find(c => c.label.toLowerCase() === it.toLowerCase()); 
+            if (opt) {
+              this.selected.cheeseIds.push(opt.id);
+              console.debug('Found cheese:', opt.label, 'id:', opt.id);
+            } else {
+              console.debug('Cheese not found:', it);
+            }
+          }
+          break;
+        case 'dressing':
+          for (const it of items) { const opt = this.dressings.find(d => d.label.toLowerCase() === it.toLowerCase()); if (opt) this.selected.dressingIds.push(opt.id); }
+          break;
+        case 'meats':
+        case 'meat':
+          for (const it of items) { const opt = this.meats.find(m => m.label.toLowerCase() === it.toLowerCase()); if (opt) this.selected.meatIds.push(opt.id); }
+          break;
+        case 'toppings':
+        case 'topping':
+          for (const it of items) { 
+            const opt = this.toppings?.find(t => t.label.toLowerCase() === it.toLowerCase()); 
+            if (opt) {
+              this.selected.toppingIds.push(opt.id);
+              console.debug('Found topping:', opt.label, 'id:', opt.id);
+            } else {
+              console.debug('Topping not found:', it);
+            }
+          }
+          break;
+      }
+    }
+    
+    console.debug('Final selections after parsing:', {
+      breadId: this.selected.breadId,
+      cheeseIds: this.selected.cheeseIds,
+      dressingIds: this.selected.dressingIds,
+      meatIds: this.selected.meatIds,
+      toppingIds: this.selected.toppingIds,
+      toasted: this.selected.toasted
+    });
+  }
+
+  get isEditMode() { return !!this.editingId; }
 
 
   ngOnInit() {
@@ -83,6 +212,23 @@ export class BuilderForm {
   this.loading = true;
   // loading starts
   let pending = 5;
+  // Global fallback: if lists haven't all resolved within this many ms,
+  // stop showing the full-page loading overlay and surface per-list
+  // errors for any empty lists. This avoids the UI being stuck at
+  // "Loading options…" when a request silently stalls.
+  const globalFallbackMs = 6000;
+  const globalTimeout = setTimeout(() => {
+    if (this.loading) {
+      this.loading = false;
+      // mark any empty lists as failed so the user sees retry buttons
+      if (!this.breads || this.breads.length === 0) this.breadsError = this.breadsError ?? 'Failed to load breads';
+      if (!this.cheeses || this.cheeses.length === 0) this.cheesesError = this.cheesesError ?? 'Failed to load cheeses';
+      if (!this.dressings || this.dressings.length === 0) this.dressingsError = this.dressingsError ?? 'Failed to load dressings';
+      if (!this.meats || this.meats.length === 0) this.meatsError = this.meatsError ?? 'Failed to load meats';
+      if (!this.toppings || this.toppings.length === 0) this.toppingsError = this.toppingsError ?? 'Failed to load toppings';
+      try { this.cd.detectChanges(); } catch { }
+    }
+  }, globalFallbackMs);
   const done = () => {
     pending -= 1;
     // Avoid ExpressionChangedAfterItHasBeenCheckedError by scheduling the
@@ -90,35 +236,82 @@ export class BuilderForm {
     // current change detection cycle.
     console.debug('BuilderForm: done() called, remaining=', pending);
     if (pending <= 0) {
+      clearTimeout(globalTimeout);
       queueMicrotask(() => {
         this.loading = false;
         console.debug('BuilderForm: all done, set loading=false (microtask)');
+        
+        // Now that all options are loaded, populate selections from description if editing
+        if (this.editingId && this.editingDescription) {
+          console.debug('BuilderForm: populating selections from description for editing');
+          console.debug('BuilderForm: editingDescription:', this.editingDescription);
+          console.debug('BuilderForm: available options - breads:', this.breads?.length, 'cheeses:', this.cheeses?.length, 'dressings:', this.dressings?.length, 'meats:', this.meats?.length, 'toppings:', this.toppings?.length);
+          this.populateSelectionsFromDescription(this.editingDescription);
+        } else {
+          console.debug('BuilderForm: not populating selections - editingId:', this.editingId, 'editingDescription:', this.editingDescription);
+        }
+        
         try { this.cd.detectChanges(); } catch { }
       });
     }
   };
 
-  this.opts.list('breads').pipe(timeout(5000)).subscribe({ next: v => { this.breads = v || []; this.cd.detectChanges(); done(); }, error: e => { this.breadsError = 'Failed to load breads'; console.error('breads error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('breads').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:breads next', v?.length); this.breads = v || []; this.cd.detectChanges(); done(); }, error: e => { this.breadsError = 'Failed to load breads'; console.error('breads error', e); this.cd.detectChanges(); done(); } });
 
-  this.opts.list('cheeses').pipe(timeout(5000)).subscribe({ next: v => { this.cheeses = v || []; this.cd.detectChanges(); done(); }, error: e => { this.cheesesError = 'Failed to load cheeses'; console.error('cheeses error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('cheeses').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:cheeses next', v?.length); this.cheeses = v || []; this.cd.detectChanges(); done(); }, error: e => { this.cheesesError = 'Failed to load cheeses'; console.error('cheeses error', e); this.cd.detectChanges(); done(); } });
 
-  this.opts.list('dressings').pipe(timeout(5000)).subscribe({ next: v => { this.dressings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.dressingsError = 'Failed to load dressings'; console.error('dressings error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('dressings').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:dressings next', v?.length); this.dressings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.dressingsError = 'Failed to load dressings'; console.error('dressings error', e); this.cd.detectChanges(); done(); } });
 
-  this.opts.list('meats').pipe(timeout(5000)).subscribe({ next: v => { this.meats = v || []; this.cd.detectChanges(); done(); }, error: e => { this.meatsError = 'Failed to load meats'; console.error('meats error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('meats').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:meats next', v?.length); this.meats = v || []; this.cd.detectChanges(); done(); }, error: e => { this.meatsError = 'Failed to load meats'; console.error('meats error', e); this.cd.detectChanges(); done(); } });
 
-  this.opts.list('toppings').pipe(timeout(5000)).subscribe({ next: v => { this.toppings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.toppingsError = 'Failed to load toppings'; console.error('toppings error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('toppings').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:toppings next', v?.length); this.toppings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.toppingsError = 'Failed to load toppings'; console.error('toppings error', e); this.cd.detectChanges(); done(); } });
 
     // If an id param is present, load the sandwich for editing. We only run
     // this in the browser to avoid server-side fetches.
     const idParam = this.route.snapshot.queryParamMap.get('id');
-    if (idParam && isPlatformBrowser(this.platformId)) {
+        if (idParam && isPlatformBrowser(this.platformId)) {
       const id = Number(idParam);
       if (!Number.isNaN(id)) {
         this.editingId = id;
         this.sandwiches.get(id).subscribe({ next: s => {
+          console.debug('BuilderForm: loaded sandwich for editing:', s);
+          console.debug('BuilderForm: API response name:', s.name, 'price:', s.price);
           // Prefill only name and price/description for now.
           this.selected.name = s.name ?? null;
-          this.selected.price = s.price ?? null;
+            this.selected.price = s.price ?? null;
+            console.debug('BuilderForm: set selected.name to:', this.selected.name, 'selected.price to:', this.selected.price);
+            // prefer explicit toasted flag from server when editing
+            this.selected.toasted = !!s.toasted;
+            // keep the full description for a read-only review view
+            this.editingDescription = s.description ?? null;
+
+            console.debug('BuilderForm: editingDescription set to:', this.editingDescription);
+            console.debug('BuilderForm: loading status:', this.loading);
+
+            // If the server returned structured composition fields, use them
+            // (we added these server-side). Otherwise fall back to description parsing.
+            if ((s as any).breadId !== undefined || (s as any).cheeseIds !== undefined || (s as any).dressingIds !== undefined || (s as any).meatIds !== undefined || (s as any).toppingIds !== undefined) {
+              console.debug('BuilderForm: server provided composition fields, applying to selected');
+              try {
+                const srv: any = s as any;
+                this.selected.breadId = srv.breadId ?? null;
+                this.selected.cheeseIds = Array.isArray(srv.cheeseIds) ? (srv.cheeseIds as number[]).slice() : [];
+                this.selected.dressingIds = Array.isArray(srv.dressingIds) ? (srv.dressingIds as number[]).slice() : [];
+                this.selected.meatIds = Array.isArray(srv.meatIds) ? (srv.meatIds as number[]).slice() : [];
+                this.selected.toppingIds = Array.isArray(srv.toppingIds) ? (srv.toppingIds as number[]).slice() : [];
+                // If server omitted toasted in composition, keep the earlier toasted flag
+                if (srv.toasted !== undefined) this.selected.toasted = !!srv.toasted;
+              } catch (e) {
+                console.debug('BuilderForm: error applying server composition fields', e);
+              }
+            }
+
+            // If options are already loaded, populate selections from description only if structured values missing
+            if (!this.loading && this.editingDescription && (this.selected.breadId == null && this.selected.cheeseIds.length === 0 && this.selected.dressingIds.length === 0 && this.selected.meatIds.length === 0 && this.selected.toppingIds.length === 0)) {
+              console.debug('BuilderForm: options already loaded, no structured composition present, populating from description');
+              this.populateSelectionsFromDescription(this.editingDescription);
+            }
+          
           // scroll/focus to form to make it apparent
           try { this.cd.detectChanges(); } catch {}
         }, error: () => { /* ignore, user can still build */ } });
@@ -149,8 +342,10 @@ export class BuilderForm {
               if (!res.ok) return;
               const json = await res.json().catch(() => null);
                 if (Array.isArray(json)) {
+                  // Map labels to Title Case to match OptionsService behavior
+                  const titleCase = (s: string) => String(s || '').replace(/(^|\s)\S/g, t => t.toUpperCase());
                   // @ts-ignore
-                  (this as any)[field] = json;
+                  (this as any)[field] = json.map((o: any) => ({ id: o.id, label: titleCase(o.label ?? o.name ?? '') }));
                   this.cd.detectChanges();
                 }
             } catch (e) {
@@ -211,7 +406,8 @@ export class BuilderForm {
     const hasDressing = (this.selected.dressingIds && this.selected.dressingIds.length > 0) || !!this.selected.noDressing;
     const hasMeat = (this.selected.meatIds && this.selected.meatIds.length > 0) || !!this.selected.noMeat;
     const hasToppings = (this.selected.toppingIds && this.selected.toppingIds.length > 0) || !!this.selected.noToppings;
-    return !!(this.selected.breadId && hasCheese && hasDressing && hasMeat && hasToppings);
+    const hasName = !!(this.selected.name && String(this.selected.name).trim().length > 0);
+    return !!(hasName && this.selected.breadId && hasCheese && hasDressing && hasMeat && hasToppings);
   }
 
   // Track whether user attempted submit (used to highlight empty required fields)
@@ -287,6 +483,63 @@ export class BuilderForm {
     }
   }
 
+  // Provide a runtime summary of the user's current selections so the
+  // UI can render a compact, always-visible review while the user steps
+  // through the builder. This helps when users forget earlier choices.
+  get selectionSummary() {
+    const summary: Array<{ name: string; values: string[] }> = [];
+
+    const breadLabel = this.breads.find(b => b.id === this.selected.breadId)?.label ?? null;
+    const breadValue = this.selected.breadId ? (breadLabel ? (this.selected.toasted ? `${breadLabel} (toasted)` : breadLabel) : '(unknown)') : '(none)';
+    summary.push({ name: 'Bread', values: [breadValue] });
+
+    const cheeseVals = this.selected.noCheese ? ['No Cheese'] : (this.selected.cheeseIds?.map(id => this.cheeses.find(c => c.id === id)?.label ?? '(unknown)') ?? []);
+    summary.push({ name: 'Cheese', values: cheeseVals.length ? cheeseVals : ['(none)'] });
+
+    const dressingVals = this.selected.noDressing ? ['No Dressing'] : (this.selected.dressingIds?.map(id => this.dressings.find(d => d.id === id)?.label ?? '(unknown)') ?? []);
+    summary.push({ name: 'Dressing', values: dressingVals.length ? dressingVals : ['(none)'] });
+
+    const meatVals = this.selected.noMeat ? ['No Meat'] : (this.selected.meatIds?.map(id => this.meats.find(m => m.id === id)?.label ?? '(unknown)') ?? []);
+    summary.push({ name: 'Meat', values: meatVals.length ? meatVals : ['(none)'] });
+
+    const toppingVals = this.selected.noToppings ? ['No Toppings'] : (this.selected.toppingIds?.map(id => this.toppings.find(t => t.id === id)?.label ?? '(unknown)') ?? []);
+    summary.push({ name: 'Toppings', values: toppingVals.length ? toppingVals : ['(none)'] });
+
+    if (this.selected.name) summary.push({ name: 'Name', values: [this.selected.name] });
+    if (this.selected.price != null) summary.push({ name: 'Price', values: [`$${Number(this.selected.price).toFixed(2)}`] });
+
+    return summary;
+  }
+
+  // compute a compact count for the panel header
+  get selectionCount() {
+    let cnt = 0;
+    if (this.selected.breadId) cnt += 1;
+    if (this.selected.noCheese) cnt += 1; else cnt += (this.selected.cheeseIds?.length ?? 0);
+    if (this.selected.noDressing) cnt += 1; else cnt += (this.selected.dressingIds?.length ?? 0);
+    if (this.selected.noMeat) cnt += 1; else cnt += (this.selected.meatIds?.length ?? 0);
+    if (this.selected.noToppings) cnt += 1; else cnt += (this.selected.toppingIds?.length ?? 0);
+    return cnt;
+  }
+
+  // UI state for the selection summary panel
+  selectionCollapsed = false;
+
+  toggleSelectionCollapsed() {
+    this.selectionCollapsed = !this.selectionCollapsed;
+    try { localStorage.setItem('builder.selectionCollapsed', this.selectionCollapsed ? '1' : '0'); } catch {}
+    try { this.cd.detectChanges(); } catch {}
+  }
+
+  ngAfterViewInit(): void {
+    // restore persisted preference if available
+    try {
+      const c = localStorage.getItem('builder.selectionCollapsed');
+      if (c !== null) this.selectionCollapsed = c === '1';
+    } catch {}
+    try { this.cd.detectChanges(); } catch {}
+  }
+
   clearMessages() {
     this.success = null;
     this.error = null;
@@ -319,8 +572,16 @@ export class BuilderForm {
       const payload = {
         name: this.selected.name,
         description: null as string | null,
-        price: this.selected.price
+        toasted: this.selected.toasted,
+        price: this.selected.price,
+        // Include composition fields for proper update
+        breadId: this.selected.breadId,
+        cheeseIds: this.selected.cheeseIds && this.selected.cheeseIds.length > 0 ? this.selected.cheeseIds : null,
+        dressingIds: this.selected.dressingIds && this.selected.dressingIds.length > 0 ? this.selected.dressingIds : null,
+        meatIds: this.selected.meatIds && this.selected.meatIds.length > 0 ? this.selected.meatIds : null,
+        toppingIds: this.selected.toppingIds && this.selected.toppingIds.length > 0 ? this.selected.toppingIds : null
       };
+      console.debug('BuilderForm: updating sandwich with payload:', payload);
       // use HttpClient wrapper
       this.sandwiches.update(id, payload).subscribe({
         next: () => {
@@ -359,6 +620,7 @@ export class BuilderForm {
         dressingIds: this.selected.dressingIds,
         meatIds: this.selected.meatIds,
         toppingIds: this.selected.toppingIds,
+        toasted: this.selected.toasted,
         price: this.selected.price
       }),
       signal: ac.signal
@@ -377,7 +639,11 @@ export class BuilderForm {
         try { this.cd.detectChanges(); } catch { }
         // refresh sandwich list so user sees their new sandwich
         this.sandwiches.list().subscribe({ next: () => {}, error: () => {} });
-        // auto-clear success after a short delay
+        // show the success briefly, then navigate back to the list so users see their saved sandwich
+        setTimeout(() => {
+          try { this.router.navigate(['/sandwiches']); } catch { }
+        }, 1200);
+        // auto-clear success after a short delay (keeps banner tidy in case navigation is prevented)
         setTimeout(() => this.success = null, 3500);
       } else if (res.status === 400) {
         console.debug('BuilderForm: validation error 400');

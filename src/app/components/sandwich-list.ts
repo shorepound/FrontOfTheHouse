@@ -9,12 +9,41 @@ import { SandwichService, Sandwich } from '../services/sandwich.service';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './sandwich-list.html',
-  styleUrls: ['./sandwich-list.css']
+  // styles moved to global styles.css to reduce component bundle size
 })
 export class SandwichList {
   sandwiches: Sandwich[] = [];
   loading = false;
   deleting = new Set<number>();
+  // When a user clicks delete, we set a pending id and show inline Confirm/Cancel
+  pendingDelete: number | null = null;
+
+  // Helper: parse a server description like
+  // "Cheese: cheddar; Dressing: mayo; Toppings: lettuce, tomato"
+  // into an array of { label, items[] } so the UI can render them nicely.
+  parseDescription(desc: string | null) {
+    if (!desc) return [] as Array<{ label: string; items: string[] }>;
+    return desc.split(';').map(part => part.trim()).filter(Boolean).map(part => {
+      const idx = part.indexOf(':');
+      if (idx === -1) return { label: part, items: [] };
+      const label = part.substring(0, idx).trim();
+      const items = part.substring(idx + 1).split(',').map(s => s.trim()).filter(Boolean);
+      return { label, items };
+    });
+  }
+
+  renderGroups(s: Sandwich) {
+    const desc = s.description ?? null;
+    const groups = this.parseDescription(desc);
+    if (typeof s.toasted !== 'undefined' && s.toasted !== null && s.toasted === true) {
+      for (const g of groups) {
+        if (/^bread$/i.test(g.label)) {
+          g.items = g.items.map(it => /\(toasted\)/i.test(it) ? it : `${it} (toasted)`);
+        }
+      }
+    }
+    return groups;
+  }
 
   constructor(private svc: SandwichService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef) {}
 
@@ -38,7 +67,15 @@ export class SandwichList {
   }
 
   deleteSandwich(id: number) {
-    if (!confirm('Delete this sandwich? This cannot be undone.')) return;
+    // Inline confirm flow: if this id is not pending, mark it pending and return
+    if (this.pendingDelete !== id) {
+      this.pendingDelete = id;
+      try { this.cd.detectChanges(); } catch {}
+      return;
+    }
+
+    // otherwise user confirmed; proceed with deletion
+    this.pendingDelete = null;
     this.deleting.add(id);
     try { this.cd.detectChanges(); } catch {}
     this.svc.delete(id).subscribe({
@@ -54,5 +91,10 @@ export class SandwichList {
         alert('Failed to delete sandwich');
       }
     });
+  }
+
+  cancelPendingDelete() {
+    this.pendingDelete = null;
+    try { this.cd.detectChanges(); } catch {}
   }
 }

@@ -1,10 +1,24 @@
 <section>
   <h2>Sandwiches</h2>
-  <nav>
-    <a routerLink="/builder">Build a sandwich</a>
-  </nav>
-  <div *ngIf="loading">Loading...</div>
-  <table *ngIf="!loading" class="sandwich-table">
+
+  <!-- Loading skeleton while data is fetched -->
+  <div *ngIf="loading" class="skeleton">
+    <div class="skeleton-row" *ngFor="let _ of [0,1,2]">
+      <div class="skeleton-cell name loading"></div>
+      <div class="skeleton-cell desc loading"></div>
+      <div class="skeleton-cell price loading"></div>
+      <div class="skeleton-cell actions loading"></div>
+    </div>
+  </div>
+
+  <!-- Friendly empty state when there are no sandwiches -->
+  <div *ngIf="!loading && sandwiches.length === 0" class="empty-state">
+    <p>No sandwiches yet — create one to get started.</p>
+    <a routerLink="/builder" class="btn btn-primary">Create sandwich</a>
+  </div>
+
+  <div *ngIf="!loading && sandwiches.length > 0" class="table-wrapper">
+    <table class="sandwich-table">
     <thead>
       <tr>
         <th>Name</th>
@@ -16,18 +30,47 @@
     <tbody>
       <tr *ngFor="let s of sandwiches">
         <td><strong>{{ s.name }}</strong></td>
-        <td>{{ s.description }}</td>
+        <td>
+          <ng-container *ngIf="s.description; else noDesc">
+            <div class="desc-block">
+              <div *ngFor="let group of renderGroups(s)" class="desc-group">
+                <div class="group-label">{{ group.label }}:</div>
+                <div class="group-items">
+                  <span *ngFor="let it of group.items" class="chip">{{ it }}</span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noDesc>—</ng-template>
+        </td>
         <td class="col-price">
           <span *ngIf="s.price != null">${{ s.price.toFixed(2) }}</span>
           <span *ngIf="s.price == null">—</span>
         </td>
         <td class="col-actions">
-          <a [routerLink]="['/builder']" [queryParams]="{ id: s.id }" class="btn btn-secondary">Edit</a>
-          <button class="btn btn-danger" type="button" (click)="deleteSandwich(s.id)" [disabled]="deleting.has(s.id)" style="margin-left:8px;">
-            {{ deleting.has(s.id) ? 'Deleting…' : 'Delete' }}
-          </button>
+          <a [routerLink]="['/builder']" [queryParams]="{ id: s.id }" class="icon-btn" title="Edit {{s.name}}" aria-label="Edit {{s.name}}">
+            <!-- pencil / edit icon -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" fill="currentColor" />
+              <path d="M20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" fill="currentColor" />
+            </svg>
+          </a>
+          <ng-container *ngIf="pendingDelete !== s.id; else confirmBlock">
+            <button class="icon-btn icon-delete" type="button" (click)="deleteSandwich(s.id)" [disabled]="deleting.has(s.id)" [attr.title]="deleting.has(s.id) ? 'Deleting…' : 'Delete ' + s.name" [attr.aria-label]="deleting.has(s.id) ? 'Deleting ' + s.name : 'Delete ' + s.name">
+              <!-- trash / delete icon -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12z" fill="currentColor" />
+                <path d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor" />
+              </svg>
+            </button>
+          </ng-container>
+          <ng-template #confirmBlock>
+            <button type="button" class="btn btn-outline-secondary" (click)="deleteSandwich(s.id)" [disabled]="deleting.has(s.id)">Confirm</button>
+            <button type="button" class="btn btn-link" (click)="cancelPendingDelete()">Cancel</button>
+          </ng-template>
         </td>
       </tr>
     </tbody>
-  </table>
+    </table>
+  </div>
 </section>

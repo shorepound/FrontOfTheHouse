@@ -6,6 +6,7 @@ export interface Sandwich {
   id: number;
   name: string;
   description: string;
+  toasted?: boolean;
   price?: number | null;
 }
 
@@ -26,7 +27,7 @@ export class SandwichService {
     return this.http.get<Sandwich>(`${this.base}/${id}`);
   }
 
-  update(id: number, payload: { name?: string | null; description?: string | null; price?: number | null; }): Observable<void> {
+  update(id: number, payload: { name?: string | null; description?: string | null; price?: number | null; toasted?: boolean | null }): Observable<void> {
     return this.http.put<void>(`${this.base}/${id}`, payload);
   }
 }
