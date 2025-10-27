@@ -1,14 +1,19 @@
-<nav class="topnav">
-  <a routerLink="/sandwiches">Sandwiches</a>
-  <a routerLink="/builder">Builder</a>
-  <span class="spacer"></span>
-  <a *ngIf="!authToken()" routerLink="/login">Login</a>
-  <a *ngIf="!authToken()" routerLink="/register">Register</a>
-  <button *ngIf="authToken()" (click)="logout()">Logout</button>
+<nav class="topnav" role="navigation" aria-label="Main">
+  <div class="brand">
+    <a routerLink="/" class="brand-link">THE SANDWICH</a>
+  </div>
+  <div class="nav-links">
+    <a routerLink="/sandwiches" routerLinkActive="active">Sandwiches</a>
+    <a routerLink="/builder" routerLinkActive="active">Builder</a>
+  </div>
+  <div class="spacer" aria-hidden="true"></div>
+  <div class="auth-links">
+    <a *ngIf="!authToken()" routerLink="/login">Login</a>
+    <a *ngIf="!authToken()" routerLink="/register">Register</a>
+    <button *ngIf="authToken()" (click)="logout()" class="btn-ghost">Logout</button>
+  </div>
 </nav>
 
-<main>
-  <h1>THE SANDWICH</h1>
+<main class="app-container" role="main">
+  <router-outlet></router-outlet>
 </main>
-
-<router-outlet />
