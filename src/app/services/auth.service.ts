@@ -6,6 +6,20 @@ export type ApiResult<T = any> = { ok: boolean; status: number; body: T | null; 
 export class AuthService {
 	constructor() {}
 
+	/** Check whether an email address already exists on the server. */
+	async exists(email: string): Promise<boolean> {
+		try {
+			const url = `http://localhost:5251/api/auth/exists?email=${encodeURIComponent(email)}`;
+			const res = await this.fetchWithTimeout(url, { method: 'GET', headers: { 'Accept': 'application/json' } }, 5000);
+			if (!res.ok) return false;
+			const text = await res.text();
+			try { const body = text ? JSON.parse(text) : null; return !!body?.exists; } catch { return false; }
+		} catch (e) {
+			console.debug('[auth] exists check failed', e);
+			return false;
+		}
+	}
+
 	private async fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 5000): Promise<Response> {
 		const controller = new AbortController();
 		const id = setTimeout(() => controller.abort(), timeoutMs);
@@ -62,7 +76,8 @@ export class AuthService {
 			
 			// Handle specific error cases
 			if (!result.ok) {
-				if (result.status === 400 && result.body?.error === 'email already registered') {
+				// Treat 409 Conflict (or 400 in older server) as 'already registered'
+				if ((result.status === 400 || result.status === 409) && result.body?.error === 'email already registered') {
 					return { ...result, body: { error: 'This email is already registered' } };
 				}
 			}

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,7 +14,7 @@ import { AuthService } from '../services/auth.service';
       <form (ngSubmit)="submit()" #f="ngForm" novalidate>
         <div class="form-group">
           <label for="email">Email</label>
-          <input id="email" name="email" type="email" [(ngModel)]="email" #emailCtrl="ngModel" required email class="form-control" />
+          <input id="email" name="email" type="email" [(ngModel)]="email" (ngModelChange)="onEmailChange($event)" #emailCtrl="ngModel" required email class="form-control" />
           <div class="text-danger small" *ngIf="emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)">
             <div *ngIf="emailCtrl.errors?.['required']">Email is required.</div>
             <div *ngIf="emailCtrl.errors?.['email']">Please enter a valid email address.</div>
@@ -39,6 +39,12 @@ import { AuthService } from '../services/auth.service';
         </div>
         <div *ngIf="error" class="alert alert-danger" aria-live="polite">{{ error }}</div>
         <div *ngIf="success" class="alert alert-success" aria-live="polite">{{ success }}</div>
+        <div *ngIf="showEmailExists" class="alert alert-warning">
+          This email is already registered. <a routerLink="/login">Log in</a>
+        </div>
+        <div *ngIf="showLoginSuggestion" class="alert alert-info">
+          This email appears to be already registered. <a routerLink="/login">Log in</a> or <a routerLink="/login">reset your password</a> if you've forgotten it.
+        </div>
         <button class="btn btn-primary" [disabled]="submitting || f.invalid">{{ submitting ? 'Registering…' : 'Register' }}</button>
       </form>
     </div>
@@ -52,8 +58,11 @@ export class Register {
   submitting = false;
   error: string | null = null;
   success: string | null = null;
+  showLoginSuggestion = false;
+  showEmailExists = false;
+  private _emailCheckTimer: any = null;
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router, private cdr: ChangeDetectorRef) {}
 
   async submit() {
     if (this.submitting) return;
@@ -87,13 +96,21 @@ export class Register {
       }
 
       // Call register endpoint
-      const res = await this.auth.register(email, password);
-      
+  const res = await this.auth.register(email, password);
+
       if (!res.ok) {
+        // Suggest login if server says the email exists (409) or message indicates that
+        if (res.status === 409 || (res.body?.error && String(res.body.error).toLowerCase().includes('registered'))) {
+          this.showLoginSuggestion = true;
+        }
+
         // Handle specific error cases
         switch (res.status) {
           case 400:
             this.error = res.body?.error ?? 'Invalid registration details';
+            break;
+          case 409:
+            this.error = res.body?.error ?? 'This email is already registered';
             break;
           case 503:
             this.error = 'Server is currently unavailable. Please try again later.';
@@ -114,6 +131,29 @@ export class Register {
     } finally {
       this.submitting = false;
     }
+  }
+
+  onEmailChange(v: string) {
+    this.showEmailExists = false;
+    this.showLoginSuggestion = false;
+    if (this._emailCheckTimer) clearTimeout(this._emailCheckTimer);
+    const email = (v || '').trim();
+    if (!email || email.indexOf('@') === -1) {
+      // don't check until it looks like an email
+      this.cdr.detectChanges();
+      return;
+    }
+    this._emailCheckTimer = setTimeout(async () => {
+      try {
+        const exists = await this.auth.exists(email);
+        this.showEmailExists = !!exists;
+        if (exists) this.showLoginSuggestion = true;
+      } catch (e) {
+        console.debug('Email exists check error', e);
+      } finally {
+        this.cdr.detectChanges();
+      }
+    }, 450);
   }
 
   // Simple, client-side password strength label for guidance only
