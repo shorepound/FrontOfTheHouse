@@ -486,7 +486,7 @@ nav a { margin-bottom: 12px; display: inline-block; }
 }
 
 main h1 { font-family: 'Courier New', Courier, monospace; color:#b7f2c9; font-weight: bolder;}
-section h2 {color: #6c6969;}
+section h2 {color: #fff;}
 
 table tr:nth-child(even) {
 background-color: azure; 
