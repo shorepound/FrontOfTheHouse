@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { OptionsService, Option } from '../services/options.service';
 import { SandwichService } from '../services/sandwich.service';
+import { AuthService } from '../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
@@ -87,7 +88,7 @@ export class BuilderForm {
     }
   }
 
-  constructor(private opts: OptionsService, private sandwiches: SandwichService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef, private route: ActivatedRoute, private router: Router) {}
+  constructor(private opts: OptionsService, private sandwiches: SandwichService, private auth: AuthService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef, private route: ActivatedRoute, private router: Router) {}
 
   // When editing an existing sandwich this holds its id
   editingId: number | null = null;
@@ -594,6 +595,15 @@ export class BuilderForm {
           try { this.cd.detectChanges(); } catch {}
           // navigate back to list
           try { this.router.navigate(['/sandwiches']); } catch {}
+          // ensure edited sandwich appears in "my sandwiches" for this browser session
+          try {
+            const key = 'my_sandwich_ids';
+            const raw = localStorage.getItem(key);
+            let arr: any[] = [];
+            try { arr = raw ? JSON.parse(raw) : []; } catch { arr = []; }
+            if (!Array.isArray(arr)) arr = [];
+            if (this.editingId && !arr.includes(this.editingId)) { arr.push(this.editingId); localStorage.setItem(key, JSON.stringify(arr)); }
+          } catch {}
         },
         error: (e) => {
           clearTimeout(timeoutId);
@@ -610,9 +620,12 @@ export class BuilderForm {
     }
 
     // default: create via /api/builder
+    const headers: Record<string,string> = { 'Content-Type': 'application/json' };
+    try { const t = this.auth.getToken(); if (t) headers['Authorization'] = 'Bearer ' + t; } catch {}
+
     fetch('/api/builder', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
         name: this.selected.name,
         breadId: this.selected.breadId,
@@ -637,6 +650,18 @@ export class BuilderForm {
   try { this.showLastSave(); } catch { }
         this.success = 'Sandwich saved!';
         try { this.cd.detectChanges(); } catch { }
+        // Persist created sandwich id in localStorage so the dashboard can show "my sandwiches"
+        try {
+          const createdId = (saved && (saved as any).id) ? (saved as any).id : null;
+          if (createdId) {
+            const key = 'my_sandwich_ids';
+            const raw = localStorage.getItem(key);
+            let arr: any[] = [];
+            try { arr = raw ? JSON.parse(raw) : []; } catch { arr = []; }
+            if (!Array.isArray(arr)) arr = [];
+            if (!arr.includes(createdId)) { arr.push(createdId); localStorage.setItem(key, JSON.stringify(arr)); }
+          }
+        } catch { }
         // refresh sandwich list so user sees their new sandwich
         this.sandwiches.list().subscribe({ next: () => {}, error: () => {} });
         // show the success briefly, then navigate back to the list so users see their saved sandwich

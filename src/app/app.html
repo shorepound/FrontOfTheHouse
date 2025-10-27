@@ -5,6 +5,7 @@
   <div class="nav-links">
     <a routerLink="/sandwiches" routerLinkActive="active">Sandwiches</a>
     <a routerLink="/builder" routerLinkActive="active">Builder</a>
+    <a *ngIf="authToken()" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
   </div>
   <div class="spacer" aria-hidden="true"></div>
   <div class="auth-links">
