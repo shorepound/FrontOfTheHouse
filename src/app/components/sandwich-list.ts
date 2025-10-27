@@ -3,6 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SandwichService, Sandwich } from '../services/sandwich.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'sandwich-list',
@@ -45,7 +46,9 @@ export class SandwichList {
     return groups;
   }
 
-  constructor(private svc: SandwichService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef) {}
+  currentUserId: number | null = null;
+
+  constructor(private svc: SandwichService, private auth: AuthService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
     // Only call the API in the browser; avoid server-side prerender fetches that fail during build
@@ -55,6 +58,9 @@ export class SandwichList {
     }
 
     this.loading = true;
+    // Compute current user id from token (dev helper) so we can show/hide edit controls
+    try { this.currentUserId = this.auth.getCurrentUserId(); } catch { this.currentUserId = null; }
+
     this.svc.list().subscribe({
       next: s => {
         this.sandwiches = s;
@@ -64,6 +70,26 @@ export class SandwichList {
       },
       error: () => { this.loading = false; try { this.cd.detectChanges(); } catch {} }
     });
+  }
+
+  /**
+   * Decide whether the current browser user can edit/delete this sandwich.
+   * Rules:
+   *  - If the sandwich is private (isPrivate === true), only the owner may edit/delete
+   *  - If the sandwich is public (isPrivate === false or undefined), edits are allowed
+   *    (server still enforces authorization for private sandwiches)
+   */
+  canEdit(s: Sandwich) {
+    try {
+      if (!s) return false;
+      // if not private (explicit false or undefined), allow edit
+      if (!s.isPrivate) return true;
+      // if private, only allow when ownerUserId matches currentUserId
+      if (s.ownerUserId != null && this.currentUserId != null) return s.ownerUserId === this.currentUserId;
+      return false;
+    } catch {
+      return false;
+    }
   }
 
   deleteSandwich(id: number) {

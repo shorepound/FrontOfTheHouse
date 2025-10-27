@@ -271,11 +271,41 @@ export class BuilderForm {
     // this in the browser to avoid server-side fetches.
     const idParam = this.route.snapshot.queryParamMap.get('id');
         if (idParam && isPlatformBrowser(this.platformId)) {
-      const id = Number(idParam);
-      if (!Number.isNaN(id)) {
-        this.editingId = id;
-        this.sandwiches.get(id).subscribe({ next: s => {
-          console.debug('BuilderForm: loaded sandwich for editing:', s);
+          const id = Number(idParam);
+          if (!Number.isNaN(id)) {
+            // Attempt to load the sandwich, but prevent entering edit mode when
+            // the current user is not allowed to edit (server enforces this too).
+            this.sandwiches.get(id).subscribe({ next: s => {
+              console.debug('BuilderForm: loaded sandwich for editing:', s);
+              // Decide whether the current browser user may edit this sandwich.
+              try {
+                const currentUser = this.auth.getCurrentUserId();
+                const isPrivate = (s as any).isPrivate === true;
+                const owner = (s as any).ownerUserId ?? null;
+                const allowed = !isPrivate || (owner != null && currentUser != null && owner === currentUser);
+                if (!allowed) {
+                  // Not allowed to edit — surface a friendly message and navigate away.
+                  console.debug('BuilderForm: user not allowed to edit sandwich id=', id, 'owner=', owner, 'current=', currentUser);
+                  this.error = 'You do not have permission to edit this sandwich.';
+                  try { this.cd.detectChanges(); } catch {}
+                  setTimeout(() => {
+                    try { this.router.navigate(['/sandwiches']); } catch {}
+                  }, 900);
+                  return;
+                }
+              } catch (e) {
+                // If permission check fails for any reason, be conservative and deny edit.
+                this.error = 'Unable to determine permission to edit this sandwich.';
+                try { this.cd.detectChanges(); } catch {}
+                setTimeout(() => { try { this.router.navigate(['/sandwiches']); } catch {} }, 900);
+                return;
+              }
+
+              // Allowed — set editingId and continue to populate form
+              this.editingId = id;
+          
+          
+          
           console.debug('BuilderForm: API response name:', s.name, 'price:', s.price);
           // Prefill only name and price/description for now.
           this.selected.name = s.name ?? null;

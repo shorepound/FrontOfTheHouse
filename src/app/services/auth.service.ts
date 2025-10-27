@@ -6,6 +6,34 @@ export type ApiResult<T = any> = { ok: boolean; status: number; body: T | null; 
 export class AuthService {
 	constructor() {}
 
+	/**
+	 * Try to parse the current token and return the numeric user id if present.
+	 * Token format (dev): base64("{guid}:{userId}:{email}:{ticks}")
+	 */
+	getCurrentUserId(): number | null {
+		try {
+			const tok = this.getToken();
+			if (!tok) return null;
+			// token may already be the base64 payload or a JWT-like string; try to handle both
+			let payload = tok;
+			// If token looks like a JWT (has dots), try to decode the middle part
+			if (tok.split('.').length === 3) {
+				const parts = tok.split('.');
+				try { payload = atob(parts[1]); } catch { payload = parts[1]; }
+			} else {
+				try { payload = atob(tok); } catch { /* not base64 */ }
+			}
+			if (!payload) return null;
+			const parts = String(payload).split(':');
+			if (parts.length < 2) return null;
+			const maybeId = Number(parts[1]);
+			if (Number.isNaN(maybeId)) return null;
+			return maybeId;
+		} catch (e) {
+			return null;
+		}
+	}
+
 	/** Check whether an email address already exists on the server. */
 	async exists(email: string): Promise<boolean> {
 		try {

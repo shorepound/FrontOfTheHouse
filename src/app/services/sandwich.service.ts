@@ -8,6 +8,9 @@ export interface Sandwich {
   description: string;
   toasted?: boolean;
   price?: number | null;
+  // set by server when available
+  ownerUserId?: number | null;
+  isPrivate?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
