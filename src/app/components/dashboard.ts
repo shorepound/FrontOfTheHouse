@@ -2,6 +2,7 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { SandwichService } from '../services/sandwich.service';
 
 interface Sandwich { id: number; name: string; description?: string; price?: number | null; toasted?: boolean; ownerUserId?: number | null; isPrivate?: boolean }
 
@@ -64,29 +65,25 @@ export class Dashboard {
   currentUserId: number | null = null;
   get isLoggedIn() { return this.currentUserId != null; }
 
-  constructor(private cdr: ChangeDetectorRef, private auth: AuthService) {
+  constructor(private cdr: ChangeDetectorRef, private auth: AuthService, private svc: SandwichService) {
     try { this.currentUserId = this.auth.getCurrentUserId(); } catch { this.currentUserId = null; }
     if (this.isLoggedIn) this.load();
   }
 
-  async load() {
+  load() {
     this.loading = true;
-    try {
-      const headers: Record<string,string> = { 'Accept': 'application/json' };
-      const t = localStorage.getItem('auth_token');
-      if (t) headers['Authorization'] = 'Bearer ' + t;
-      const res = await fetch('/api/sandwiches/mine', { headers });
-      if (!res.ok) {
+    this.svc.mine().subscribe({
+      next: (list) => {
+        this.sandwiches = list as Sandwich[];
+        this.loading = false;
+        try { this.cdr.detectChanges(); } catch {}
+      },
+      error: () => {
         this.sandwiches = [];
-      } else {
-        this.sandwiches = await res.json().catch(() => []);
+        this.loading = false;
+        try { this.cdr.detectChanges(); } catch {}
       }
-    } catch (e) {
-      this.sandwiches = [];
-    } finally {
-      this.loading = false;
-      try { this.cdr.detectChanges(); } catch {}
-    }
+    });
   }
 
   canEdit(s: Sandwich) {
@@ -98,21 +95,18 @@ export class Dashboard {
   }
 
   async deleteSandwich(id: number) {
-    try {
-      const headers: Record<string,string> = { 'Accept': 'application/json' };
-      const t = localStorage.getItem('auth_token');
-      if (t) headers['Authorization'] = 'Bearer ' + t;
-      const res = await fetch('/api/sandwiches/' + id, { method: 'DELETE', headers });
-      if (res.ok) {
+    this.svc.delete(id).subscribe({
+      next: () => {
         this.sandwiches = this.sandwiches.filter(x => x.id !== id);
         try { this.cdr.detectChanges(); } catch {}
-      } else if (res.status === 403) {
-        alert('You do not have permission to delete this sandwich.');
-      } else {
-        alert('Failed to delete sandwich');
+      },
+      error: (err) => {
+        if ((err && err.status) === 403) {
+          alert('You do not have permission to delete this sandwich.');
+        } else {
+          alert('Failed to delete sandwich');
+        }
       }
-    } catch (e) {
-      alert('Failed to delete sandwich');
-    }
+    });
   }
 }

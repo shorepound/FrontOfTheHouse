@@ -1,10 +1,12 @@
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
+import { AuthInterceptor } from './services/auth-interceptor';
 import { provideClientHydration } from '@angular/platform-browser';
 
 // Create a cache interceptor
@@ -29,9 +31,14 @@ const cacheInterceptor = (req: any, next: any) => {
 export const appConfig: ApplicationConfig = {
   providers: [
     importProvidersFrom(FormsModule),
-    provideHttpClient(withFetch()),
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
     provideRouter(routes),
     provideAnimations(),
     provideClientHydration()
   ]
 };
+
+// Register the interceptor so HttpClient calls get the Authorization header automatically
+export const httpProviders = [
+  { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+];
