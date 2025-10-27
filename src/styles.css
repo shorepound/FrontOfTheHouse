@@ -92,6 +92,17 @@ app-root, .app-container {
 .landing-cta .btn { padding: 12px 18px; border-radius: 10px; font-weight: 700; }
 .landing-note { color: var(--muted); font-size: 0.95rem; margin-top: 8px; }
 
+/* Auth form tweaks */
+.auth { max-width: 520px; margin: 12px auto; background: var(--surface); padding: 18px; border-radius: 10px; box-shadow: var(--shadow-soft); }
+.auth h2 { margin-top: 0; font-size: 1.4rem; color: var(--primary); }
+.auth .form-group { margin-bottom: 14px; }
+.auth .form-actions { margin-top: 12px; display: flex; gap: 12px; justify-content: flex-start; }
+.password-row { display: flex; gap: 8px; align-items: center; }
+.password-row .form-control { flex: 1 1 auto; }
+.password-toggle { background: transparent; border: 1px solid rgba(0,0,0,0.06); padding: 8px 10px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.password-hint { color: var(--muted); margin-top: 6px; }
+.muted { color: var(--muted); }
+
 /* Legacy header layout kept for compatibility (nav-left/nav-right grid) */
 .app-header {
   background: rgba(255, 255, 255, 0.95);

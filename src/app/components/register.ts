@@ -22,11 +22,20 @@ import { AuthService } from '../services/auth.service';
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input id="password" type="password" name="password" [(ngModel)]="password" #passwordCtrl="ngModel" required minlength="8" class="form-control" />
+          <div class="password-row">
+            <input id="password" [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="password" #passwordCtrl="ngModel" required minlength="8" class="form-control" />
+            <button type="button" class="password-toggle" (click)="showPassword = !showPassword">{{ showPassword ? 'Hide' : 'Show' }}</button>
+          </div>
           <div class="text-danger small" *ngIf="passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched)">
             <div *ngIf="passwordCtrl.errors?.['required']">Password is required.</div>
             <div *ngIf="passwordCtrl.errors?.['minlength']">Password must be at least 8 characters.</div>
           </div>
+          <div class="password-hint small muted">Password strength: <strong>{{ passwordStrengthLabel() }}</strong></div>
+        </div>
+        <div class="form-group">
+          <label for="confirm">Confirm password</label>
+          <input id="confirm" type="password" name="confirm" [(ngModel)]="confirmPassword" #confirmCtrl="ngModel" required class="form-control" />
+          <div class="text-danger small" *ngIf="confirmPassword && confirmPassword !== password">Passwords do not match.</div>
         </div>
         <div *ngIf="error" class="alert alert-danger" aria-live="polite">{{ error }}</div>
         <div *ngIf="success" class="alert alert-success" aria-live="polite">{{ success }}</div>
@@ -38,6 +47,8 @@ import { AuthService } from '../services/auth.service';
 export class Register {
   email = '';
   password = '';
+  confirmPassword = '';
+  showPassword = false;
   submitting = false;
   error: string | null = null;
   success: string | null = null;
@@ -55,6 +66,7 @@ export class Register {
     try {
       const email = (this.email || '').trim();
       const password = (this.password || '').trim();
+      const confirm = (this.confirmPassword || '').trim();
 
       // Frontend validation
       if (!email) {
@@ -67,6 +79,10 @@ export class Register {
       }
       if (password.length < 8) {
         this.error = 'Password must be at least 8 characters';
+        return;
+      }
+      if (password !== confirm) {
+        this.error = 'Passwords do not match';
         return;
       }
 
@@ -98,5 +114,19 @@ export class Register {
     } finally {
       this.submitting = false;
     }
+  }
+
+  // Simple, client-side password strength label for guidance only
+  passwordStrengthLabel() {
+    const s = this.password || '';
+    let score = 0;
+    if (s.length >= 8) score++;
+    if (/[A-Z]/.test(s)) score++;
+    if (/[0-9]/.test(s)) score++;
+    if (/[^A-Za-z0-9]/.test(s)) score++;
+    if (score <= 1) return 'weak';
+    if (score === 2) return 'fair';
+    if (score === 3) return 'good';
+    return 'strong';
   }
 }

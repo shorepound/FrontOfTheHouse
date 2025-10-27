@@ -24,36 +24,45 @@ import { AuthService } from '../services/auth.service';
           required
           email
           class="form-control"
+          autofocus
           [attr.aria-invalid]="emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched) ? 'true' : null"
         />
-        <div class="text-danger small" *ngIf="emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)">
+        <div id="email-help" class="text-danger small" *ngIf="emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)">
           <div *ngIf="emailCtrl.errors?.['required']">Email is required.</div>
           <div *ngIf="emailCtrl.errors?.['email']">Please enter a valid email address.</div>
         </div>
       </div>
+
       <div class="form-group">
         <label for="password">Password</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autocomplete="current-password"
-          [(ngModel)]="password"
-          #passwordCtrl="ngModel"
-          required
-          minlength="8"
-          class="form-control"
-          [attr.aria-invalid]="passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched) ? 'true' : null"
-        />
+        <div class="password-row">
+          <input
+            id="password"
+            name="password"
+            [type]="showPassword ? 'text' : 'password'"
+            autocomplete="current-password"
+            [(ngModel)]="password"
+            #passwordCtrl="ngModel"
+            required
+            minlength="8"
+            class="form-control"
+            [attr.aria-invalid]="passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched) ? 'true' : null"
+          />
+          <button type="button" class="password-toggle" (click)="showPassword = !showPassword" [attr.aria-pressed]="showPassword">{{ showPassword ? 'Hide' : 'Show' }}</button>
+        </div>
         <div class="text-danger small" *ngIf="passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched)">
           <div *ngIf="passwordCtrl.errors?.['required']">Password is required.</div>
           <div *ngIf="passwordCtrl.errors?.['minlength']">Password must be at least 8 characters.</div>
         </div>
       </div>
+
       <div *ngIf="error" class="alert alert-danger" aria-live="polite">{{ error }}</div>
-      <button class="btn btn-primary" [disabled]="submitting || f.invalid">{{ submitting ? 'Logging in…' : 'Log in' }}</button>
+      <div class="form-actions">
+        <button class="btn btn-primary" [disabled]="submitting || f.invalid">{{ submitting ? 'Logging in…' : 'Log in' }}</button>
+      </div>
     </form>
-    <p *ngIf="showRegisterSuggestion">Don't have an account? <a routerLink="/register">Register</a></p>
+    <p *ngIf="showRegisterSuggestion" class="muted">Don't have an account? <a routerLink="/register">Create one</a></p>
+
     <div *ngIf="requiresMfa" class="mfa">
       <h3>MFA required</h3>
       <label>Code</label>
@@ -66,6 +75,7 @@ import { AuthService } from '../services/auth.service';
 export class Login {
   email = '';
   password = '';
+  showPassword = false;
   error: string | null = null;
   submitting = false;
   showRegisterSuggestion = false;
