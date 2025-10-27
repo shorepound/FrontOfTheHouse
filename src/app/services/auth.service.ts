@@ -40,10 +40,50 @@ export class AuthService {
 
 	async register(email: string, password: string): Promise<ApiResult> {
 		try {
-			const res = await this.fetchWithTimeout('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ email, password }) });
-			return await this.parseResponse(res);
+			// Validate input before sending
+			if (!email || !email.trim()) {
+				return { ok: false, status: 400, body: { error: 'Email is required' }, bodyText: 'Email is required' };
+			}
+			if (!password || password.length < 8) {
+				return { ok: false, status: 400, body: { error: 'Password must be at least 8 characters' }, bodyText: 'Password must be at least 8 characters' };
+			}
+
+			email = email.trim().toLowerCase();
+			const res = await this.fetchWithTimeout('http://localhost:5251/api/auth/register', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
+				},
+				body: JSON.stringify({ email, password })
+			});
+
+			const result = await this.parseResponse(res);
+			
+			// Handle specific error cases
+			if (!result.ok) {
+				if (result.status === 400 && result.body?.error === 'email already registered') {
+					return { ...result, body: { error: 'This email is already registered' } };
+				}
+			}
+			
+			return result;
 		} catch (t) {
-			return { ok: false, status: 0, body: { error: (t as any)?.message ?? String(t) }, bodyText: String(t) };
+			console.error('Registration error:', t);
+			if ((t as any)?.message?.includes('Failed to fetch')) {
+				return { 
+					ok: false, 
+					status: 503, 
+					body: { error: 'Unable to connect to the server. Please try again.' },
+					bodyText: 'Connection error'
+				};
+			}
+			return {
+				ok: false,
+				status: 0,
+				body: { error: (t as any)?.message ?? String(t) },
+				bodyText: String(t)
+			};
 		}
 	}
 

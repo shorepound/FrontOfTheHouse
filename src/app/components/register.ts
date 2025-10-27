@@ -46,18 +46,57 @@ export class Register {
 
   async submit() {
     if (this.submitting) return;
-    this.submitting = true; this.error = null; this.success = null;
+    
+    // Reset status
+    this.submitting = true;
+    this.error = null;
+    this.success = null;
+
     try {
       const email = (this.email || '').trim();
       const password = (this.password || '').trim();
-      const res = await this.auth.register(email, password);
-      if (!res.ok) {
-        this.error = res.body?.error ?? 'Registration failed';
+
+      // Frontend validation
+      if (!email) {
+        this.error = 'Email is required';
         return;
       }
-      this.success = 'Registration successful — please log in';
-      setTimeout(() => this.router.navigate(['/login']), 900);
-    } catch (e) { this.error = (e as any)?.message ?? String(e); }
-    finally { this.submitting = false; }
+      if (!password) {
+        this.error = 'Password is required';
+        return;
+      }
+      if (password.length < 8) {
+        this.error = 'Password must be at least 8 characters';
+        return;
+      }
+
+      // Call register endpoint
+      const res = await this.auth.register(email, password);
+      
+      if (!res.ok) {
+        // Handle specific error cases
+        switch (res.status) {
+          case 400:
+            this.error = res.body?.error ?? 'Invalid registration details';
+            break;
+          case 503:
+            this.error = 'Server is currently unavailable. Please try again later.';
+            break;
+          default:
+            this.error = res.body?.error ?? 'Registration failed. Please try again.';
+        }
+        return;
+      }
+
+      // Success case
+      this.success = 'Registration successful! Redirecting to login...';
+      await new Promise(resolve => setTimeout(resolve, 900));
+      this.router.navigate(['/login']);
+    } catch (e) {
+      console.error('Registration error:', e);
+      this.error = 'An unexpected error occurred. Please try again.';
+    } finally {
+      this.submitting = false;
+    }
   }
 }
