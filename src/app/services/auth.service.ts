@@ -61,9 +61,25 @@ export class AuthService {
 
 		const obs = this.http.request(method, url, { body, headers: hdrs, observe: 'response', responseType: 'text' as const });
 		// Use RxJS timeout to abort if server doesn't respond
-		const resp = await firstValueFrom(obs.pipe(rxTimeout(timeoutMs)));
-		console.debug('[auth] Received response:', resp.status);
-		return resp as HttpResponse<string>;
+		try {
+			const resp = await firstValueFrom(obs.pipe(rxTimeout(timeoutMs)));
+			console.debug('[auth] Received response:', resp.status);
+			return resp as HttpResponse<string>;
+		} catch (e: any) {
+			// HttpClient emits errors (HttpErrorResponse) for non-2xx responses; normalize
+			console.debug('[auth] Request error or non-2xx response:', e);
+			const status = (e && typeof e.status === 'number') ? e.status : 0;
+			let bodyText: string | null = null;
+			if (e && e.error) {
+				if (typeof e.error === 'string') bodyText = e.error;
+				else {
+					try { bodyText = JSON.stringify(e.error); } catch { bodyText = String(e.error); }
+				}
+			}
+			// Return a minimal HttpResponse-like object compatible with parseResponse()
+			const fake = { status, body: bodyText } as unknown as HttpResponse<string>;
+			return fake;
+		}
 	}
 
 	private async parseResponse(res: HttpResponse<string>) {
