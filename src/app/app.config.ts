@@ -42,3 +42,8 @@ export const appConfig: ApplicationConfig = {
 export const httpProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
 ];
+
+// Ensure the AuthInterceptor provider is included in the application providers so
+// HttpClient requests get the Authorization header automatically. This mirrors
+// the exported `httpProviders` but keeps the appConfig self-contained.
+appConfig.providers!.push({ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true });
