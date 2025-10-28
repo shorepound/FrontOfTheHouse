@@ -1,6 +1,9 @@
 <section>
   <h2>Sandwiches</h2>
 
+  <!-- standardized toast -->
+  <app-toast *ngIf="toast" [message]="toast" type="error" (closed)="toast = null"></app-toast>
+
   <!-- Loading skeleton while data is fetched -->
   <div *ngIf="loading" class="skeleton">
     <div class="skeleton-row" *ngFor="let _ of [0,1,2]">

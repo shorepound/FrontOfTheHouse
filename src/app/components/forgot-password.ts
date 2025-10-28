@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { Toast } from './toast';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, Toast],
   template: `
   <div class="auth">
     <h2>Reset your password</h2>
@@ -25,10 +26,8 @@ import { AuthService } from '../services/auth.service';
       <div *ngIf="error" class="alert alert-danger" aria-live="polite">{{ error }}</div>
       <div *ngIf="success" class="alert alert-success" aria-live="polite">{{ success }}</div>
 
-      <!-- lightweight toast (transient) -->
-      <div *ngIf="toast" style="position:fixed; right:1rem; top:1rem; z-index:1050;">
-        <div style="background:#0d6efd;color:white;padding:0.6rem 0.9rem;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.15);">{{ toast }}</div>
-      </div>
+      <!-- standardized toast -->
+      <app-toast *ngIf="toast" [message]="toast" type="success" (closed)="toast = null"></app-toast>
 
       <div class="form-actions">
         <button class="btn btn-primary" [disabled]="submitting || f.invalid">{{ submitting ? 'Sending…' : 'Send reset instructions' }}</button>

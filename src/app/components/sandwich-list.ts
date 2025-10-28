@@ -4,11 +4,12 @@ import { PLATFORM_ID } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SandwichService, Sandwich } from '../services/sandwich.service';
 import { AuthService } from '../services/auth.service';
+import { Toast } from './toast';
 
 @Component({
   selector: 'sandwich-list',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, Toast],
   templateUrl: './sandwich-list.html',
   // styles moved to global styles.css to reduce component bundle size
 })
@@ -18,6 +19,8 @@ export class SandwichList {
   deleting = new Set<number>();
   // When a user clicks delete, we set a pending id and show inline Confirm/Cancel
   pendingDelete: number | null = null;
+  // transient toast message (used instead of window.alert)
+  toast: string | null = null;
 
   // Helper: parse a server description like
   // "Cheese: cheddar; Dressing: mayo; Toppings: lettuce, tomato"
@@ -114,7 +117,8 @@ export class SandwichList {
       error: () => {
         this.deleting.delete(id);
         try { this.cd.detectChanges(); } catch {}
-        alert('Failed to delete sandwich');
+        this.toast = 'Failed to delete sandwich';
+        try { this.cd.detectChanges(); } catch {}
       }
     });
   }

@@ -3,18 +3,20 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { SandwichService } from '../services/sandwich.service';
+import { Toast } from './toast';
 
 interface Sandwich { id: number; name: string; description?: string; price?: number | null; toasted?: boolean; ownerUserId?: number | null; isPrivate?: boolean }
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, Toast],
   template: `
   <section>
     <h2>Your dashboard</h2>
-
     <p *ngIf="!isLoggedIn">You must be logged in to see your sandwiches. <a routerLink="/login">Login</a></p>
+
+    <app-toast *ngIf="toast" [message]="toast" type="error" (closed)="toast = null"></app-toast>
 
     <div *ngIf="isLoggedIn">
       <div *ngIf="loading" class="muted">Loading…</div>
@@ -63,6 +65,8 @@ export class Dashboard {
   sandwiches: Sandwich[] = [];
   loading = false;
   currentUserId: number | null = null;
+  // transient toast message for user-visible errors
+  toast: string | null = null;
   get isLoggedIn() { return this.currentUserId != null; }
 
   constructor(private cdr: ChangeDetectorRef, private auth: AuthService, private svc: SandwichService) {
@@ -102,11 +106,14 @@ export class Dashboard {
       },
       error: (err) => {
         if ((err && err.status) === 403) {
-          alert('You do not have permission to delete this sandwich.');
+          this.toast = 'You do not have permission to delete this sandwich.';
         } else {
-          alert('Failed to delete sandwich');
+          this.toast = 'Failed to delete sandwich';
         }
+        try { this.cdr.detectChanges(); } catch {}
       }
     });
   }
+
+  
 }
