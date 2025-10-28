@@ -349,45 +349,9 @@ export class BuilderForm {
       }
     }
 
-    // Immediate client-side fallback: attempt native fetch() in parallel for
-    // any empty lists. We only run this in the browser and only populate
-    // fields that are still empty and have no explicit error. This is a
-    // pragmatic dev-time mitigation for hydration/HttpClient races.
-    if (typeof window !== 'undefined') {
-      (async () => {
-        try {
-          const checks: Array<[keyof BuilderForm, string, string]> = [
-            ['breads', 'breads', 'breadsError'],
-            ['cheeses', 'cheeses', 'cheesesError'],
-            ['dressings', 'dressings', 'dressingsError'],
-            ['meats', 'meats', 'meatsError'],
-            ['toppings', 'toppings', 'toppingsError']
-          ];
-          await Promise.all(checks.map(async ([field, kind, errField]) => {
-            // @ts-ignore
-            if ((this as any)[field] && (this as any)[field].length > 0) return;
-            // @ts-ignore
-            if ((this as any)[errField]) return;
-            try {
-              const res = await fetch(`/api/options/${kind}`);
-              if (!res.ok) return;
-              const json = await res.json().catch(() => null);
-                if (Array.isArray(json)) {
-                  // Map labels to Title Case to match OptionsService behavior
-                  const titleCase = (s: string) => String(s || '').replace(/(^|\s)\S/g, t => t.toUpperCase());
-                  // @ts-ignore
-                  (this as any)[field] = json.map((o: any) => ({ id: o.id, label: titleCase(o.label ?? o.name ?? '') }));
-                  this.cd.detectChanges();
-                }
-            } catch (e) {
-              // ignore errors here; main HttpClient handlers will surface problems
-            }
-          }));
-        } catch {
-          /* ignore */
-        }
-      })();
-    }
+    // Note: removed the temporary native-fetch fallback that attempted to
+    // populate option lists in parallel. We now rely on the OptionsService
+    // HttpClient calls and explicit retries exposed via retry()/retryList().
   }
 
   retry() {
@@ -649,37 +613,29 @@ export class BuilderForm {
       return;
     }
 
-    // default: create via /api/builder
-    const headers: Record<string,string> = { 'Content-Type': 'application/json' };
-    try { const t = this.auth.getToken(); if (t) headers['Authorization'] = 'Bearer ' + t; } catch {}
+    // default: create via SandwichService so the AuthInterceptor attaches
+    // Authorization and we use HttpClient's observable pipeline.
+    const payload = {
+      name: this.selected.name,
+      breadId: this.selected.breadId,
+      cheeseIds: this.selected.cheeseIds,
+      dressingIds: this.selected.dressingIds,
+      meatIds: this.selected.meatIds,
+      toppingIds: this.selected.toppingIds,
+      toasted: this.selected.toasted,
+      price: this.selected.price
+    };
 
-    fetch('/api/builder', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        name: this.selected.name,
-        breadId: this.selected.breadId,
-        cheeseIds: this.selected.cheeseIds,
-        dressingIds: this.selected.dressingIds,
-        meatIds: this.selected.meatIds,
-        toppingIds: this.selected.toppingIds,
-        toasted: this.selected.toasted,
-        price: this.selected.price
-      }),
-      signal: ac.signal
-    }).then(async res => {
-      clearTimeout(timeoutId);
-      console.debug('BuilderForm: fetch completed, status=', res.status);
-      this.submitting = false;
-      try { this.cd.detectChanges(); } catch { }
-      if (res.ok) {
-        console.debug('BuilderForm: save OK');
-        const saved = await res.json().catch(() => null);
-  // show persistent banner with server response
-  this.lastSave = { ok: true, message: 'Sandwich saved', data: saved };
-  try { this.showLastSave(); } catch { }
+    this.sandwiches.create(payload).subscribe({
+      next: (saved) => {
+        clearTimeout(timeoutId);
+        this.submitting = false;
+        try { this.cd.detectChanges(); } catch {}
+        this.lastSave = { ok: true, message: 'Sandwich saved', data: saved };
+        try { this.showLastSave(); } catch {}
         this.success = 'Sandwich saved!';
-        try { this.cd.detectChanges(); } catch { }
+        try { this.cd.detectChanges(); } catch {}
+
         // Persist created sandwich id in localStorage so the dashboard can show "my sandwiches"
         try {
           const createdId = (saved && (saved as any).id) ? (saved as any).id : null;
@@ -692,6 +648,7 @@ export class BuilderForm {
             if (!arr.includes(createdId)) { arr.push(createdId); localStorage.setItem(key, JSON.stringify(arr)); }
           }
         } catch { }
+
         // refresh sandwich list so user sees their new sandwich
         this.sandwiches.list().subscribe({ next: () => {}, error: () => {} });
         // show the success briefly, then navigate back to the list so users see their saved sandwich
@@ -700,46 +657,33 @@ export class BuilderForm {
         }, 1200);
         // auto-clear success after a short delay (keeps banner tidy in case navigation is prevented)
         setTimeout(() => this.success = null, 3500);
-      } else if (res.status === 400) {
-        console.debug('BuilderForm: validation error 400');
-        // try parse field-level validation
-        const body = await res.json().catch(() => null);
-        if (body && body.errors) {
-          const errs = body.errors as Record<string,string>;
-          this.breadsError = errs['breadId'] ?? null;
-          // map array errors
-          this.cheesesError = errs['cheeseIds'] ?? errs['cheeseId'] ?? null;
-          this.dressingsError = errs['dressingIds'] ?? errs['dressingId'] ?? null;
-          this.meatsError = errs['meatIds'] ?? errs['meatId'] ?? null;
-          this.toppingsError = errs['toppingIds'] ?? errs['toppingId'] ?? null;
-          try { this.cd.detectChanges(); } catch { }
-            } else {
-            const txt = await res.text().catch(() => res.statusText);
-            console.debug('BuilderForm: unknown 400 body', txt);
-            this.lastSave = { ok: false, message: 'Save failed (400): ' + txt };
-            try { this.showLastSave(); } catch { }
-            this.error = 'Save failed: ' + txt;
-            try { this.cd.detectChanges(); } catch { }
-            setTimeout(() => this.error = null, 6000);
+      },
+      error: (e) => {
+        clearTimeout(timeoutId);
+        this.submitting = false;
+        try { this.cd.detectChanges(); } catch {}
+        // HttpClient wraps errors; try to extract server validation errors if present
+        let handled = false;
+        try {
+          if (e && e.status === 400 && e.error && e.error.errors) {
+            const errs = e.error.errors as Record<string,string>;
+            this.breadsError = errs['breadId'] ?? null;
+            this.cheesesError = errs['cheeseIds'] ?? errs['cheeseId'] ?? null;
+            this.dressingsError = errs['dressingIds'] ?? errs['dressingId'] ?? null;
+            this.meatsError = errs['meatIds'] ?? errs['meatId'] ?? null;
+            this.toppingsError = errs['toppingIds'] ?? errs['toppingId'] ?? null;
+            handled = true;
           }
-      } else {
-        const txt = await res.text().catch(() => res.statusText);
-        console.debug('BuilderForm: non-400 error', res.status, txt);
-        this.lastSave = { ok: false, message: 'Save failed (' + res.status + '): ' + txt };
-        try { this.showLastSave(); } catch { }
-        this.error = 'Save failed: ' + txt;
-        try { this.cd.detectChanges(); } catch { }
-        setTimeout(() => this.error = null, 6000);
+        } catch {}
+        if (!handled) {
+          const msg = (e && e.message) ? e.message : (e && e.statusText) ? e.statusText : String(e);
+          this.lastSave = { ok: false, message: 'Save failed: ' + msg };
+          try { this.showLastSave(); } catch {}
+          this.error = 'Save failed: ' + msg;
+          try { this.cd.detectChanges(); } catch {}
+          setTimeout(() => this.error = null, 6000);
+        }
       }
-    }).catch(e => {
-      clearTimeout(timeoutId);
-      this.submitting = false;
-      try { this.cd.detectChanges(); } catch { }
-      const msg = (e && e.message) ? e.message : String(e);
-      this.lastSave = { ok: false, message: 'Save failed: ' + msg };
-      try { this.showLastSave(); } catch { }
-      this.error = 'Save failed: ' + msg;
-      try { this.cd.detectChanges(); } catch { }
     });
   }
 

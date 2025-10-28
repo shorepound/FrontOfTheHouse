@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { timeout as rxTimeout } from 'rxjs/operators';
 
 export type ApiResult<T = any> = { ok: boolean; status: number; body: T | null; bodyText: string | null };
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-	constructor() {}
+	constructor(private http: HttpClient) {}
 
 	/**
 	 * Try to parse the current token and return the numeric user id if present.
@@ -39,8 +42,8 @@ export class AuthService {
 		try {
 			const url = `http://localhost:5251/api/auth/exists?email=${encodeURIComponent(email)}`;
 			const res = await this.fetchWithTimeout(url, { method: 'GET', headers: { 'Accept': 'application/json' } }, 5000);
-			if (!res.ok) return false;
-			const text = await res.text();
+			if (res.status < 200 || res.status >= 300) return false;
+			const text = res.body ?? null;
 			try { const body = text ? JSON.parse(text) : null; return !!body?.exists; } catch { return false; }
 		} catch (e) {
 			console.debug('[auth] exists check failed', e);
@@ -48,34 +51,31 @@ export class AuthService {
 		}
 	}
 
-	private async fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 5000): Promise<Response> {
-		const controller = new AbortController();
-		const id = setTimeout(() => controller.abort(), timeoutMs);
-		try {
-			console.debug('[auth] Sending request to:', url, { ...options, body: '***' });
-			const response = await fetch(url, { ...options, signal: controller.signal });
-			console.debug('[auth] Received response:', response.status);
-			return response;
-		} finally {
-			clearTimeout(id);
-		}
+	private async fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 5000): Promise<HttpResponse<string>> {
+		// Map RequestInit to HttpClient-friendly parameters
+		const method = (options && (options as any).method) ? String((options as any).method).toUpperCase() : 'GET';
+		const hdrs = new HttpHeaders(options && options.headers ? (options.headers as any) : {});
+		const body = (options as any)?.body;
+
+		console.debug('[auth] Sending request to:', url, { method, headers: hdrs.keys(), body: body ? '***' : null });
+
+		const obs = this.http.request(method, url, { body, headers: hdrs, observe: 'response', responseType: 'text' as const });
+		// Use RxJS timeout to abort if server doesn't respond
+		const resp = await firstValueFrom(obs.pipe(rxTimeout(timeoutMs)));
+		console.debug('[auth] Received response:', resp.status);
+		return resp as HttpResponse<string>;
 	}
 
-	private async parseResponse(res: Response) {
+	private async parseResponse(res: HttpResponse<string>) {
 		let text: string | null = null;
 		let body: any = null;
 		try {
-			text = await res.text();
+			text = res.body ?? null;
 			console.debug('[auth] Raw response text:', text);
-			try { 
-				body = text ? JSON.parse(text) : null; 
-			} catch (e) { 
-				console.debug('[auth] Failed to parse response:', text, e); 
-			}
-		} catch (e) { 
-			console.debug('[auth] Failed to read response:', e); 
-		}
-		const result = { ok: res.ok, status: res.status, body, bodyText: text } as ApiResult;
+			try { body = text ? JSON.parse(text) : null; } catch (e) { console.debug('[auth] Failed to parse response:', text, e); }
+		} catch (e) { console.debug('[auth] Failed to read response:', e); }
+		const ok = res.status >= 200 && res.status < 300;
+		const result = { ok, status: res.status, body, bodyText: text } as ApiResult;
 		console.debug('[auth] Final parsed response:', result);
 		return result;
 	}
@@ -98,7 +98,7 @@ export class AuthService {
 					'Accept': 'application/json'
 				},
 				body: JSON.stringify({ email, password })
-			});
+			}, 5000);
 
 			const result = await this.parseResponse(res);
 			
@@ -141,7 +141,7 @@ export class AuthService {
 
 	async verifyMfa(mfaToken: string, code: string): Promise<ApiResult> {
 		try {
-			const res = await this.fetchWithTimeout('/api/auth/mfa/verify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ mfaToken, code }) });
+			const res = await this.fetchWithTimeout('/api/auth/mfa/verify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ mfaToken, code }) }, 5000);
 			return await this.parseResponse(res);
 		} catch (t) {
 			return { ok: false, status: 0, body: { error: (t as any)?.message ?? String(t) }, bodyText: String(t) };
