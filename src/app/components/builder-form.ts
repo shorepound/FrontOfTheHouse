@@ -4,6 +4,7 @@ import { PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { OptionsService, Option } from '../services/options.service';
+import { OptionsFacadeService } from '../services/options-facade.service';
 import { SandwichService } from '../services/sandwich.service';
 import { AuthService } from '../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -87,7 +88,7 @@ export class BuilderForm {
     }
   }
 
-  constructor(private opts: OptionsService, private sandwiches: SandwichService, private auth: AuthService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef, private route: ActivatedRoute, private router: Router) {}
+  constructor(private opts: OptionsService, private optionsFacade: OptionsFacadeService, private sandwiches: SandwichService, private auth: AuthService, @Inject(PLATFORM_ID) private platformId: Object, private cd: ChangeDetectorRef, private route: ActivatedRoute, private router: Router) {}
 
   // When editing an existing sandwich this holds its id
   editingId: number | null = null;
@@ -256,15 +257,21 @@ export class BuilderForm {
     }
   };
 
-  this.opts.list('breads').subscribe({ next: v => { console.debug('opts:breads next', v?.length); this.breads = v || []; this.cd.detectChanges(); done(); }, error: e => { this.breadsError = 'Failed to load breads'; console.error('breads error', e); this.cd.detectChanges(); done(); } });
+  // Use the OptionsFacadeService so list loading and errors are centralized
+  this.optionsFacade.list$('breads').subscribe({ next: v => { console.debug('opts:breads next', v?.length); this.breads = v || []; this.cd.detectChanges(); done(); } });
+  this.optionsFacade.error$('breads').subscribe(e => { if (e) { this.breadsError = e; try { this.cd.detectChanges(); } catch {} } });
 
-  this.opts.list('cheeses').subscribe({ next: v => { console.debug('opts:cheeses next', v?.length); this.cheeses = v || []; this.cd.detectChanges(); done(); }, error: e => { this.cheesesError = 'Failed to load cheeses'; console.error('cheeses error', e); this.cd.detectChanges(); done(); } });
+  this.optionsFacade.list$('cheeses').subscribe({ next: v => { console.debug('opts:cheeses next', v?.length); this.cheeses = v || []; this.cd.detectChanges(); done(); } });
+  this.optionsFacade.error$('cheeses').subscribe(e => { if (e) { this.cheesesError = e; try { this.cd.detectChanges(); } catch {} } });
 
-  this.opts.list('dressings').subscribe({ next: v => { console.debug('opts:dressings next', v?.length); this.dressings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.dressingsError = 'Failed to load dressings'; console.error('dressings error', e); this.cd.detectChanges(); done(); } });
+  this.optionsFacade.list$('dressings').subscribe({ next: v => { console.debug('opts:dressings next', v?.length); this.dressings = v || []; this.cd.detectChanges(); done(); } });
+  this.optionsFacade.error$('dressings').subscribe(e => { if (e) { this.dressingsError = e; try { this.cd.detectChanges(); } catch {} } });
 
-  this.opts.list('meats').subscribe({ next: v => { console.debug('opts:meats next', v?.length); this.meats = v || []; this.cd.detectChanges(); done(); }, error: e => { this.meatsError = 'Failed to load meats'; console.error('meats error', e); this.cd.detectChanges(); done(); } });
+  this.optionsFacade.list$('meats').subscribe({ next: v => { console.debug('opts:meats next', v?.length); this.meats = v || []; this.cd.detectChanges(); done(); } });
+  this.optionsFacade.error$('meats').subscribe(e => { if (e) { this.meatsError = e; try { this.cd.detectChanges(); } catch {} } });
 
-  this.opts.list('toppings').subscribe({ next: v => { console.debug('opts:toppings next', v?.length); this.toppings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.toppingsError = 'Failed to load toppings'; console.error('toppings error', e); this.cd.detectChanges(); done(); } });
+  this.optionsFacade.list$('toppings').subscribe({ next: v => { console.debug('opts:toppings next', v?.length); this.toppings = v || []; this.cd.detectChanges(); done(); } });
+  this.optionsFacade.error$('toppings').subscribe(e => { if (e) { this.toppingsError = e; try { this.cd.detectChanges(); } catch {} } });
 
     // If an id param is present, load the sandwich for editing. We only run
     // this in the browser to avoid server-side fetches.
@@ -369,21 +376,26 @@ export class BuilderForm {
       this[field] = errMsg;
     };
     switch (kind) {
-  case 'breads':
-  this.breadsError = null; this.opts.list('breads').subscribe({ next: v => this.breads = v || [], error: handler('Failed to load breads', 'breadsError') });
-  break;
-  case 'cheeses':
-  this.cheesesError = null; this.opts.list('cheeses').subscribe({ next: v => this.cheeses = v || [], error: handler('Failed to load cheeses', 'cheesesError') });
-  break;
-  case 'dressings':
-  this.dressingsError = null; this.opts.list('dressings').subscribe({ next: v => this.dressings = v || [], error: handler('Failed to load dressings', 'dressingsError') });
-  break;
-  case 'meats':
-  this.meatsError = null; this.opts.list('meats').subscribe({ next: v => this.meats = v || [], error: handler('Failed to load meats', 'meatsError') });
-  break;
-  case 'toppings':
-  this.toppingsError = null; this.opts.list('toppings').subscribe({ next: v => this.toppings = v || [], error: handler('Failed to load toppings', 'toppingsError') });
-  break;
+      case 'breads':
+        this.breadsError = null;
+        this.optionsFacade.retry('breads');
+        break;
+      case 'cheeses':
+        this.cheesesError = null;
+        this.optionsFacade.retry('cheeses');
+        break;
+      case 'dressings':
+        this.dressingsError = null;
+        this.optionsFacade.retry('dressings');
+        break;
+      case 'meats':
+        this.meatsError = null;
+        this.optionsFacade.retry('meats');
+        break;
+      case 'toppings':
+        this.toppingsError = null;
+        this.optionsFacade.retry('toppings');
+        break;
     }
   }
 
