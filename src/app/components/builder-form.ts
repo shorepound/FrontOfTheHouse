@@ -273,6 +273,9 @@ export class BuilderForm {
   this.optionsFacade.list$('toppings').subscribe({ next: v => { console.debug('opts:toppings next', v?.length); this.toppings = v || []; this.cd.detectChanges(); done(); } });
   this.optionsFacade.error$('toppings').subscribe(e => { if (e) { this.toppingsError = e; try { this.cd.detectChanges(); } catch {} } });
 
+  // Kick off loading for all lists (facade caches and updates the observables)
+  try { this.optionsFacade.loadAll(); } catch (e) { console.error('OptionsFacade.loadAll error', e); }
+
     // If an id param is present, load the sandwich for editing. We only run
     // this in the browser to avoid server-side fetches.
     const idParam = this.route.snapshot.queryParamMap.get('id');
