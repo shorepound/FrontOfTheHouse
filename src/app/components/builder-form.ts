@@ -8,7 +8,6 @@ import { SandwichService } from '../services/sandwich.service';
 import { AuthService } from '../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { timeout } from 'rxjs/operators';
 
 @Component({
   selector: 'builder-form',
@@ -257,15 +256,15 @@ export class BuilderForm {
     }
   };
 
-  this.opts.list('breads').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:breads next', v?.length); this.breads = v || []; this.cd.detectChanges(); done(); }, error: e => { this.breadsError = 'Failed to load breads'; console.error('breads error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('breads').subscribe({ next: v => { console.debug('opts:breads next', v?.length); this.breads = v || []; this.cd.detectChanges(); done(); }, error: e => { this.breadsError = 'Failed to load breads'; console.error('breads error', e); this.cd.detectChanges(); done(); } });
 
-  this.opts.list('cheeses').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:cheeses next', v?.length); this.cheeses = v || []; this.cd.detectChanges(); done(); }, error: e => { this.cheesesError = 'Failed to load cheeses'; console.error('cheeses error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('cheeses').subscribe({ next: v => { console.debug('opts:cheeses next', v?.length); this.cheeses = v || []; this.cd.detectChanges(); done(); }, error: e => { this.cheesesError = 'Failed to load cheeses'; console.error('cheeses error', e); this.cd.detectChanges(); done(); } });
 
-  this.opts.list('dressings').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:dressings next', v?.length); this.dressings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.dressingsError = 'Failed to load dressings'; console.error('dressings error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('dressings').subscribe({ next: v => { console.debug('opts:dressings next', v?.length); this.dressings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.dressingsError = 'Failed to load dressings'; console.error('dressings error', e); this.cd.detectChanges(); done(); } });
 
-  this.opts.list('meats').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:meats next', v?.length); this.meats = v || []; this.cd.detectChanges(); done(); }, error: e => { this.meatsError = 'Failed to load meats'; console.error('meats error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('meats').subscribe({ next: v => { console.debug('opts:meats next', v?.length); this.meats = v || []; this.cd.detectChanges(); done(); }, error: e => { this.meatsError = 'Failed to load meats'; console.error('meats error', e); this.cd.detectChanges(); done(); } });
 
-  this.opts.list('toppings').pipe(timeout(5000)).subscribe({ next: v => { console.debug('opts:toppings next', v?.length); this.toppings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.toppingsError = 'Failed to load toppings'; console.error('toppings error', e); this.cd.detectChanges(); done(); } });
+  this.opts.list('toppings').subscribe({ next: v => { console.debug('opts:toppings next', v?.length); this.toppings = v || []; this.cd.detectChanges(); done(); }, error: e => { this.toppingsError = 'Failed to load toppings'; console.error('toppings error', e); this.cd.detectChanges(); done(); } });
 
     // If an id param is present, load the sandwich for editing. We only run
     // this in the browser to avoid server-side fetches.
@@ -371,19 +370,19 @@ export class BuilderForm {
     };
     switch (kind) {
       case 'breads':
-        this.breadsError = null; this.opts.list('breads').pipe(timeout(5000)).subscribe({ next: v => this.breads = v || [], error: handler('Failed to load breads', 'breadsError') });
+        this.breadsError = null; this.opts.list('breads').subscribe({ next: v => this.breads = v || [], error: handler('Failed to load breads', 'breadsError') });
         break;
       case 'cheeses':
-        this.cheesesError = null; this.opts.list('cheeses').pipe(timeout(5000)).subscribe({ next: v => this.cheeses = v || [], error: handler('Failed to load cheeses', 'cheesesError') });
+        this.cheesesError = null; this.opts.list('cheeses').subscribe({ next: v => this.cheeses = v || [], error: handler('Failed to load cheeses', 'cheesesError') });
         break;
       case 'dressings':
-        this.dressingsError = null; this.opts.list('dressings').pipe(timeout(5000)).subscribe({ next: v => this.dressings = v || [], error: handler('Failed to load dressings', 'dressingsError') });
+        this.dressingsError = null; this.opts.list('dressings').subscribe({ next: v => this.dressings = v || [], error: handler('Failed to load dressings', 'dressingsError') });
         break;
       case 'meats':
-        this.meatsError = null; this.opts.list('meats').pipe(timeout(5000)).subscribe({ next: v => this.meats = v || [], error: handler('Failed to load meats', 'meatsError') });
+        this.meatsError = null; this.opts.list('meats').subscribe({ next: v => this.meats = v || [], error: handler('Failed to load meats', 'meatsError') });
         break;
       case 'toppings':
-        this.toppingsError = null; this.opts.list('toppings').pipe(timeout(5000)).subscribe({ next: v => this.toppings = v || [], error: handler('Failed to load toppings', 'toppingsError') });
+        this.toppingsError = null; this.opts.list('toppings').subscribe({ next: v => this.toppings = v || [], error: handler('Failed to load toppings', 'toppingsError') });
         break;
     }
   }
